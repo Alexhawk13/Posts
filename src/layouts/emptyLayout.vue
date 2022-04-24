@@ -1,6 +1,6 @@
 <template>
   <q-layout class="bg-blue-grey-1 flex flex-center" view="hHh lpR fFf">
-    <q-page-container class="">
+    <q-page-container>
       <router-view />
     </q-page-container>
   </q-layout>
@@ -8,7 +8,6 @@
 
 <script>
 export default {
-  // eslint-disable-next-line vue/multi-word-component-names
-  name: 'auth',
+  name: 'AuthPage',
 };
 </script>

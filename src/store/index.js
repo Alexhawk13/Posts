@@ -9,6 +9,10 @@ export default createStore({
     async register(_, credentials) {
       await api.post('/api/v1/users', credentials);
     },
+    async getAuthToken(_, credentials) {
+      const TOKEN = await api.post('/api/v1/auth', credentials);
+      localStorage.setItem('userKey', TOKEN.data.token);
+    },
   },
   modules: {},
 });
