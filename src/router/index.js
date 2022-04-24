@@ -9,7 +9,7 @@ const routes = [
   },
   {
     path: '/auth/',
-    name: 'auth',
+    name: 'AuthPage',
     component: () => import('../layouts/emptyLayout.vue'),
     children: [
       {

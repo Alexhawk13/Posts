@@ -1,5 +1,9 @@
 @require 'reset.styl'
-@require 'SignupView.styl'
+
+flex()
+  display flex
+  flex-direction column
+  align-items center
 
 .container
   width: 100%
@@ -17,3 +21,18 @@
 
   @media (min-width: 1408px)
     max-width 1344px
+
+.form-wrapper
+  flex()
+  .heading
+    margin: 10px 0
+  .form
+    flex()
+    width "max(30vw, 290px)" % null
+    &__input
+      width 100%
+      font-size 24px
+      margin 10px 0
+    &__button
+      width 100%
+      margin: 10px 0
