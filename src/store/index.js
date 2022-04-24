@@ -10,8 +10,8 @@ export default createStore({
       await api.post('/api/v1/users', credentials);
     },
     async getAuthToken(_, credentials) {
-      const TOKEN = await api.post('/api/v1/auth', credentials);
-      localStorage.setItem('userKey', TOKEN.data.token);
+      const token = await api.post('/api/v1/auth', credentials);
+      localStorage.setItem('userKey', token.data.token);
     },
   },
   modules: {},

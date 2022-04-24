@@ -1,14 +1,11 @@
 @require 'reset.styl'
-
-flex()
-  display flex
-  flex-direction column
-  align-items center
+@require 'varColors.styl'
+@require 'varSizes.styl'
 
 .container
-  width: 100%
-  margin-right: auto
-  margin-left: auto
+  width 100%
+  margin-right auto
+  margin-left auto
 
   @media (min-width 576px)
     max-width 100%
@@ -22,17 +19,17 @@ flex()
   @media (min-width: 1408px)
     max-width 1344px
 
-.form-wrapper
-  flex()
-  .heading
+.heading
+  margin-bottom: 20px;
+  text-align center
+.form
+  width "max(30vw, 290px)" % null
+  .form__input
+    font-size 24px
+  .form__button
+    width 100%
     margin: 10px 0
-  .form
-    flex()
-    width "max(30vw, 290px)" % null
-    &__input
-      width 100%
-      font-size 24px
-      margin 10px 0
-    &__button
-      width 100%
-      margin: 10px 0
+    padding: 12px 0px;
+    font-size: 20px;
+  .form__footer
+    text-align center

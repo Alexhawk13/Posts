@@ -35,7 +35,7 @@
         color="primary"
         label="Sign Up"
       />
-      <p>
+      <p class="form__footer">
         Already have an account?<router-link :to="{ name: 'LogIn' }"
           ><strong> Log In</strong></router-link
         >

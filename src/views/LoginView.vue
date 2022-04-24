@@ -26,7 +26,7 @@
         color="primary"
         label="Log In"
       />
-      <p>
+      <p class="form__footer">
         New to Swagger?<router-link :to="{ name: 'SignUp' }"
           ><strong> Sign Up</strong></router-link
         >
@@ -65,11 +65,11 @@ export default {
         return;
       }
       try {
-        const DATA = {
+        const data = {
           email: this.email,
           password: this.password,
         };
-        await this.$store.dispatch('getAuthToken', DATA);
+        await this.$store.dispatch('getAuthToken', data);
 
         this.$router.push({ name: 'home' });
 
