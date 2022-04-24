@@ -9,5 +9,7 @@ module.exports = {
     'plugin:prettier/recommended',
   ],
   plugins: [],
-  rules: {},
+  rules: {
+    'no-unused-vars': 'off',
+  },
 };
