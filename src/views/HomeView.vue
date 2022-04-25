@@ -1,13 +1,16 @@
 <template>
-  <div class="home">
-    <h1>Home</h1>
+  <div v-if="loggedIn" class="home">
+    <h1>Hello</h1>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
+import { mapGetters } from 'vuex';
 
 export default {
   name: 'HomeView',
+  computed: {
+    ...mapGetters(['loggedIn']),
+  },
 };
 </script>

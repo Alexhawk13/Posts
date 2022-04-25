@@ -1,5 +1,5 @@
 <template>
-  <q-layout class="bg flex flex-center" view="hHh lpR fFf">
+  <q-layout class="flex flex-center container" view="hHh lpR fFf">
     <q-page-container>
       <router-view />
     </q-page-container>

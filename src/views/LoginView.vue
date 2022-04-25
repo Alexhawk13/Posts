@@ -71,7 +71,7 @@ export default {
         };
         await this.$store.dispatch('getAuthToken', data);
 
-        this.$router.push({ name: 'home' });
+        this.$router.push({ name: 'HomePage' });
 
         showSuccessMessage('Hello');
       } catch (e) {

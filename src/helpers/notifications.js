@@ -5,7 +5,7 @@ export function showSuccessMessage(text) {
     type: 'positive',
     message: text,
     position: 'top-right',
-    timeout: '5000',
+    timeout: '1000',
   });
 }
 export function showDangerMessage(text) {
@@ -13,6 +13,6 @@ export function showDangerMessage(text) {
     type: 'negative',
     message: text,
     position: 'top-right',
-    timeout: '5000',
+    timeout: '1000',
   });
 }
