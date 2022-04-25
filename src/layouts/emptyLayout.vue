@@ -1,5 +1,5 @@
 <template>
-  <q-layout class="bg-blue-grey-1 flex flex-center" view="hHh lpR fFf">
+  <q-layout class="bg flex flex-center" view="hHh lpR fFf">
     <q-page-container>
       <router-view />
     </q-page-container>
@@ -8,6 +8,6 @@
 
 <script>
 export default {
-  name: 'AuthPage',
+  name: 'AuthLayout',
 };
 </script>

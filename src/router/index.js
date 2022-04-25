@@ -3,13 +3,8 @@ import HomeView from '../views/HomeView.vue';
 
 const routes = [
   {
-    path: '/',
-    name: 'home',
-    component: HomeView,
-  },
-  {
     path: '/auth/',
-    name: 'AuthPage',
+    name: 'AuthLayout',
     component: () => import('../layouts/emptyLayout.vue'),
     children: [
       {
@@ -21,6 +16,18 @@ const routes = [
         path: 'login',
         name: 'LogIn',
         component: () => import('../views/LoginView.vue'),
+      },
+    ],
+  },
+  {
+    path: '/main/',
+    name: 'MainLayout',
+    component: () => import('../layouts/mainLayout.vue'),
+    children: [
+      {
+        path: 'home',
+        name: 'HomePage',
+        component: () => import('../views/HomeView.vue'),
       },
     ],
   },
