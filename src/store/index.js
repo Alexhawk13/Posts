@@ -3,18 +3,20 @@ import api from '../services/api.js';
 
 export default createStore({
   state: {
-    name: '',
-    isAuth: false,
+    user: null,
   },
   getters: {
-    loggedIn(state) {
-      return state.isAuth;
+    isAuth(state) {
+      return !!state.user;
     },
   },
   mutations: {
-    addUserData(state, payload) {
-      state.name = payload.name;
-      state.isAuth = true;
+    SET_USER_DATA(state, payload) {
+      state.user = payload;
+    },
+    CLEAR_USER_DATA(state) {
+      state.user = null;
+      localStorage.removeItem('token');
     },
   },
   actions: {
@@ -28,7 +30,10 @@ export default createStore({
     },
     async getUser({ commit }) {
       const response = await api.get('/api/v1/auth/user');
-      commit('addUserData', response.data);
+      commit('SET_USER_DATA', response.data);
+    },
+    async logOut({ commit }) {
+      commit('CLEAR_USER_DATA');
     },
   },
   modules: {},
