@@ -1,7 +1,12 @@
 @require 'reset.styl'
 @require 'varColors.styl'
 @require 'varSizes.styl'
+@require 'fonts.styl'
 
+body
+  background-color $background-color
+body.desktop.no-touch.body--light
+  font-family: 'PT Sans', sans-serif;
 .container
   width 100%
   margin-right auto
@@ -20,16 +25,17 @@
     max-width 1344px
 
 .heading
-  margin-bottom: 20px;
+  margin-bottom 20px
   text-align center
-.form
-  width "max(30vw, 290px)" % null
-  .form__input
-    font-size $font-size-extra-large
-  .form__button
-    width 100%
-    margin 10px 0
-    padding 12px 0px
-    font-size $font-size-large
-  .form__footer
-    text-align center
+.form-wrapper
+  .form
+    width "max(30vw, 290px)" % null
+    &__input
+      font-size $font-size-extra-large
+    &__button
+      width 100%
+      margin 10px 0
+      padding 12px 0px
+      font-size $font-size-large
+    &__footer
+      text-align center

@@ -1,13 +1,14 @@
 <template>
-  <div class="home">
-    <h1>Home</h1>
-  </div>
+  <div class="home"></div>
 </template>
 
 <script>
-// @ is an alias to /src
+import { mapGetters } from 'vuex';
 
 export default {
   name: 'HomeView',
+  computed: {
+    ...mapGetters(['isAuth']),
+  },
 };
 </script>
