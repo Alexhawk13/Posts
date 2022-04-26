@@ -9,10 +9,20 @@
       </q-toolbar-title>
       <q-space></q-space>
       <div>
+        <router-link class="gt-xs" v-if="!isAuth" :to="{ name: 'LogIn' }">
+          <q-btn
+            color="blue-grey-6 text-bold"
+            icon-right="login"
+            label="Log In"
+          />
+        </router-link>
         <q-btn-dropdown
+          v-if="isAuth"
+          auto-close
           class="glossy gt-xs"
-          color="blue-grey-8"
-          label="Account Settings"
+          color="blue-grey-6"
+          :label="user ? user.name : ''"
+          icon="account_circle"
         >
           <div class="row no-wrap q-pa-md">
             <div class="settings__column column items-center">
@@ -50,8 +60,9 @@
           </div>
         </q-btn-dropdown>
       </div>
-      <q-btn class="burger xs blue-grey-8" icon="menu">
+      <q-btn class="burger xs blue-grey-6" icon="menu">
         <q-menu
+          auto-close
           fit
           anchor="bottom left"
           self="top start"
@@ -105,19 +116,25 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex';
+import { mapGetters } from 'vuex';
 
 export default {
   name: 'MainHeader',
+  data() {
+    return {
+      user: null,
+    };
+  },
   computed: {
-    ...mapGetters(['isAuth']),
-    ...mapState(['user']),
+    ...mapGetters(['isAuth', 'getUserState']),
+  },
+  mounted() {
+    this.user = this.getUserState;
   },
   methods: {
     logOut() {
-      setTimeout(() => {
-        this.$store.dispatch('logOut');
-      }, 100);
+      this.$store.dispatch('logOut');
+      this.$router.push({ name: 'HomePage' });
     },
   },
 };
@@ -128,22 +145,8 @@ export default {
   margin 0 auto
 .burger__item
   font-size 16px
-.searchDesktop
-  font-size 16px
-  margin-right 5px
-  background-color #008183
-  padding 7px 10px
 .q-item
   padding 0
-.signUpBtn
-  border-radius 3px
-  text-decoration none
-  font-size 20px
-  font-weight bold
-  background-color #1976D2
-  color #fff
-  margin-right -12px
-  padding 10px 40px
 .q-btn
   &.burger
     margin-right -20px

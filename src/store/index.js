@@ -9,6 +9,9 @@ export default createStore({
     isAuth(state) {
       return !!state.user;
     },
+    getUserState(state) {
+      return state.user;
+    },
   },
   mutations: {
     SET_USER_DATA(state, payload) {
@@ -32,7 +35,7 @@ export default createStore({
       const response = await api.get('/api/v1/auth/user');
       commit('SET_USER_DATA', response.data);
     },
-    async logOut({ commit }) {
+    logOut({ commit }) {
       commit('CLEAR_USER_DATA');
     },
   },

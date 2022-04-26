@@ -38,10 +38,7 @@
 <script>
 import useVuelidate from '@vuelidate/core';
 import { required, email, minLength } from '@vuelidate/validators';
-import {
-  showDangerMessage,
-  showSuccessMessage,
-} from '../helpers/notifications.js';
+import { showDangerMessage } from '../helpers/notifications.js';
 
 export default {
   name: 'LogIn',
@@ -72,8 +69,6 @@ export default {
         await this.$store.dispatch('getAuthToken', data);
 
         this.$router.push({ name: 'HomePage' });
-
-        showSuccessMessage('Hello');
       } catch (e) {
         showDangerMessage(e.response.data.error);
       }
