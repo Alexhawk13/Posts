@@ -1,14 +1,15 @@
 <template>
-  <div class="home"></div>
+  <PostsPage />
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import PostsPage from '@/components/PostsBlock.vue';
 
 export default {
   name: 'HomeView',
-  computed: {
-    ...mapGetters(['isAuth']),
+  components: { PostsPage },
+  mounted() {
+    this.$store.dispatch('getPosts', { params: { limit: 5, skip: 0 } });
   },
 };
 </script>

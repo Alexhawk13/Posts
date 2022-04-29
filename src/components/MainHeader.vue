@@ -2,10 +2,12 @@
   <q-header elevated class="bg-indigo-2 text-white">
     <q-toolbar>
       <q-toolbar-title>
-        <q-avatar>
-          <q-btn flat round dense icon="satellite_alt" />
-        </q-avatar>
-        Swagger
+        <q-btn to="/"
+          ><q-avatar>
+            <q-btn flat round dense icon="satellite_alt" />
+          </q-avatar>
+          Swagger</q-btn
+        >
       </q-toolbar-title>
       <q-space></q-space>
       <div>
@@ -21,7 +23,7 @@
           auto-close
           class="glossy gt-xs"
           color="blue-grey-6"
-          :label="user ? user.name : ''"
+          :label="getUserState ? getUserState.name : ''"
           icon="account_circle"
         >
           <div class="row no-wrap q-pa-md">
@@ -31,7 +33,7 @@
               </q-avatar>
 
               <div class="text-subtitle1 q-mt-md q-mb-xs">
-                {{ user ? user.name : 'John Doe' }}
+                {{ getUserState ? getUserState.name : 'John Doe' }}
               </div>
               <q-btn
                 v-if="isAuth"
@@ -41,6 +43,7 @@
                 label="Profile"
               />
               <q-btn
+                :to="{ name: 'HomeView' }"
                 v-if="isAuth"
                 @click="logOut"
                 class="q-mt-sm"
@@ -77,7 +80,7 @@
                 </q-avatar>
 
                 <div class="text-subtitle1 q-mt-md q-mb-xs" v-if="isAuth">
-                  {{ user.name }}
+                  {{ getUserState ? getUserState.name : '' }}
                 </div>
                 <q-btn
                   v-if="isAuth"
@@ -120,21 +123,13 @@ import { mapGetters } from 'vuex';
 
 export default {
   name: 'MainHeader',
-  data() {
-    return {
-      user: null,
-    };
-  },
   computed: {
     ...mapGetters(['isAuth', 'getUserState']),
   },
-  mounted() {
-    this.user = this.getUserState;
-  },
+
   methods: {
     logOut() {
       this.$store.dispatch('logOut');
-      this.$router.push({ name: 'HomePage' });
     },
   },
 };

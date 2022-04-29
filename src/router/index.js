@@ -25,7 +25,7 @@ const routes = [
     children: [
       {
         path: 'home',
-        name: 'HomePage',
+        name: 'HomeView',
         component: () => import('../views/HomeView.vue'),
       },
     ],
