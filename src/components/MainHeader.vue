@@ -2,7 +2,7 @@
   <q-header elevated class="bg-indigo-2 text-white">
     <q-toolbar>
       <q-toolbar-title>
-        <q-btn @click="goHome()"
+        <q-btn to="/"
           ><q-avatar>
             <q-btn flat round dense icon="satellite_alt" />
           </q-avatar>
@@ -43,6 +43,7 @@
                 label="Profile"
               />
               <q-btn
+                :to="{ name: 'HomeView' }"
                 v-if="isAuth"
                 @click="logOut"
                 class="q-mt-sm"
@@ -129,10 +130,6 @@ export default {
   methods: {
     logOut() {
       this.$store.dispatch('logOut');
-      this.goHome();
-    },
-    goHome() {
-      this.$router.push({ name: 'HomeView' });
     },
   },
 };

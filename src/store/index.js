@@ -10,9 +10,6 @@ export default createStore({
     isAuth(state) {
       return !!state.user;
     },
-    isLogged(state) {
-      return !!(localStorage.getItem('token') && state.user);
-    },
     getUserState(state) {
       return state.user;
     },

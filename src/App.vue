@@ -7,9 +7,10 @@ import { mapGetters } from 'vuex';
 
 export default {
   name: 'LayoutDefault',
-  mounted() {
-    if (localStorage.getItem('token')) {
-      this.$store.dispatch('getUser');
+  async created() {
+    const token = localStorage.getItem('token');
+    if (!this.isAuth && token) {
+      await this.$store.dispatch('getUser');
     }
   },
   computed: {
