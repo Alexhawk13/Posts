@@ -2,11 +2,11 @@
   <q-header elevated class="bg-indigo-2 text-white">
     <q-toolbar>
       <q-toolbar-title>
-        <router-link :to="{ name: 'HomeView' }"
+        <q-btn @click="goHome()"
           ><q-avatar>
             <q-btn flat round dense icon="satellite_alt" />
           </q-avatar>
-          Swagger</router-link
+          Swagger</q-btn
         >
       </q-toolbar-title>
       <q-space></q-space>
@@ -23,7 +23,7 @@
           auto-close
           class="glossy gt-xs"
           color="blue-grey-6"
-          :label="user ? user.name : ''"
+          :label="getUserState ? getUserState.name : ''"
           icon="account_circle"
         >
           <div class="row no-wrap q-pa-md">
@@ -33,7 +33,7 @@
               </q-avatar>
 
               <div class="text-subtitle1 q-mt-md q-mb-xs">
-                {{ user ? user.name : 'John Doe' }}
+                {{ getUserState ? getUserState.name : 'John Doe' }}
               </div>
               <q-btn
                 v-if="isAuth"
@@ -79,7 +79,7 @@
                 </q-avatar>
 
                 <div class="text-subtitle1 q-mt-md q-mb-xs" v-if="isAuth">
-                  {{ user.name }}
+                  {{ getUserState ? getUserState.name : '' }}
                 </div>
                 <q-btn
                   v-if="isAuth"
@@ -122,22 +122,16 @@ import { mapGetters } from 'vuex';
 
 export default {
   name: 'MainHeader',
-  data() {
-    return {
-      user: null,
-    };
-  },
   computed: {
     ...mapGetters(['isAuth', 'getUserState']),
   },
-  async mounted() {
-    this.isAuth ? await this.$store.dispatch('getUser') : '';
-    this.user = await this.getUserState;
-  },
+
   methods: {
     logOut() {
       this.$store.dispatch('logOut');
-      window.location.reload();
+      this.goHome();
+    },
+    goHome() {
       this.$router.push({ name: 'HomeView' });
     },
   },

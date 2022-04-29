@@ -2,14 +2,9 @@
   <div class="q-pa-md row items-start q-gutter-md cards-wrapper">
     <q-card class="my-card card" @click="detailsPage">
       <div class="date-block">
-        <strong>{{
-          post.dateCreated ? convertDate(post.dateCreated).split(' ')[1] : ''
-        }}</strong>
-
+        <strong>{{ date[1] }}</strong>
         <br />
-        {{
-          post.dateCreated ? convertDate(post.dateCreated).split(' ')[0] : ''
-        }}
+        {{ date[0] }}
       </div>
       <img
         class="card__image"
@@ -42,12 +37,12 @@
         />
         <div class="text-subtitle2 avatar-wrapper">
           <img
-            v-if="user && user.avatar"
+            v-if="author && author.avatar"
             class="avatar"
-            :src="`${baseUrl + userAvatar()}`"
+            :src="`${baseUrl + authorAvatar()}`"
           />
           <q-icon v-else class="avatar" name="face" size="25px"></q-icon>
-          <span>{{ user ? user.name : 'John Doe' }}</span>
+          <span>{{ author ? author.name : 'John Doe' }}</span>
         </div>
       </q-card-section>
     </q-card>
@@ -67,13 +62,17 @@ export default {
   },
   data() {
     return {
-      user: null,
-      baseUrl: 'http://test-blog-api.ficuslife.com',
+      author: null,
+      baseUrl: process.env.VUE_APP_API,
     };
   },
 
-  mounted() {
-    this.getAuthor();
+  async mounted() {
+    let authorId = this.post.postedBy;
+
+    if (authorId) {
+      this.author = await this.$store.dispatch('fetchAuthor', authorId);
+    }
   },
   methods: {
     convertDate,
@@ -81,15 +80,15 @@ export default {
     detailsPage() {
       this.$router.push({ name: 'HomeView' });
     },
-    async getAuthor() {
-      let authorId = this.post.postedBy;
-
-      if (authorId) {
-        this.user = await this.$store.dispatch('fetchAuthor', authorId);
-      }
+    authorAvatar() {
+      if (this.author && this.author.avatar) return this.author.avatar;
     },
-    userAvatar() {
-      if (this.user && this.user.avatar) return this.user.avatar;
+  },
+  computed: {
+    date() {
+      return this.post.dateCreated
+        ? this.convertDate(this.post.dateCreated).split(' ')
+        : '';
     },
   },
 };

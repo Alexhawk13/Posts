@@ -7,8 +7,11 @@ export default createStore({
     posts: null,
   },
   getters: {
-    isAuth() {
-      return !!localStorage.getItem('token');
+    isAuth(state) {
+      return !!state.user;
+    },
+    isLogged(state) {
+      return !!(localStorage.getItem('token') && state.user);
     },
     getUserState(state) {
       return state.user;
@@ -27,9 +30,6 @@ export default createStore({
     },
     SET_POSTS(state, posts) {
       state.posts = posts;
-    },
-    CHANGE_POST_AUTHOR(state, payload) {
-      state.posts[payload.index].postedBy = payload.authorObj.data;
     },
   },
   actions: {
