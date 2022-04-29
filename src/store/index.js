@@ -4,22 +4,32 @@ import api from '../services/api.js';
 export default createStore({
   state: {
     user: null,
+    posts: null,
   },
   getters: {
-    isAuth(state) {
-      return !!state.user;
+    isAuth() {
+      return !!localStorage.getItem('token');
     },
     getUserState(state) {
       return state.user;
     },
+    posts(state) {
+      return state.posts;
+    },
   },
   mutations: {
-    SET_USER_DATA(state, payload) {
-      state.user = payload;
+    SET_USER_DATA(state, user) {
+      state.user = user;
     },
     CLEAR_USER_DATA(state) {
       state.user = null;
       localStorage.removeItem('token');
+    },
+    SET_POSTS(state, posts) {
+      state.posts = posts;
+    },
+    CHANGE_POST_AUTHOR(state, payload) {
+      state.posts[payload.index].postedBy = payload.authorObj.data;
     },
   },
   actions: {
@@ -37,6 +47,14 @@ export default createStore({
     },
     logOut({ commit }) {
       commit('CLEAR_USER_DATA');
+    },
+    async getPosts({ commit }, payload) {
+      const posts = await api.get(`/api/v1/posts`, payload);
+      commit('SET_POSTS', posts.data.data);
+    },
+    async fetchAuthor(_, id) {
+      const response = await api.get(`/api/v1/users/${id}`);
+      return response.data;
     },
   },
   modules: {},

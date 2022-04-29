@@ -2,10 +2,12 @@
   <q-header elevated class="bg-indigo-2 text-white">
     <q-toolbar>
       <q-toolbar-title>
-        <q-avatar>
-          <q-btn flat round dense icon="satellite_alt" />
-        </q-avatar>
-        Swagger
+        <router-link :to="{ name: 'HomeView' }"
+          ><q-avatar>
+            <q-btn flat round dense icon="satellite_alt" />
+          </q-avatar>
+          Swagger</router-link
+        >
       </q-toolbar-title>
       <q-space></q-space>
       <div>
@@ -128,13 +130,15 @@ export default {
   computed: {
     ...mapGetters(['isAuth', 'getUserState']),
   },
-  mounted() {
-    this.user = this.getUserState;
+  async mounted() {
+    this.isAuth ? await this.$store.dispatch('getUser') : '';
+    this.user = await this.getUserState;
   },
   methods: {
     logOut() {
       this.$store.dispatch('logOut');
-      this.$router.push({ name: 'HomePage' });
+      window.location.reload();
+      this.$router.push({ name: 'HomeView' });
     },
   },
 };

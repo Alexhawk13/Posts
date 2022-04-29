@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { Loading } from 'quasar';
 
 const baseURL = process.env.VUE_APP_API;
 
@@ -8,6 +9,7 @@ const api = axios.create({
     accept: 'application/json',
   },
 });
+
 api.interceptors.request.use(
   function (config) {
     let token = localStorage.getItem('token');
@@ -16,10 +18,18 @@ api.interceptors.request.use(
         Authorization: `Bearer ${token}`,
       };
     }
+    Loading.show({
+      delay: 400,
+    });
     return config;
   },
   function (error) {
     return Promise.reject(error);
   }
 );
+api.interceptors.response.use((config) => {
+  Loading.hide();
+  return config;
+});
+
 export default api;
