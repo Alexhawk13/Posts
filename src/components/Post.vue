@@ -66,7 +66,6 @@ export default {
       baseUrl: process.env.VUE_APP_API,
     };
   },
-
   async mounted() {
     let authorId = this.post.postedBy;
 

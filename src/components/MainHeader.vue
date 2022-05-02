@@ -2,7 +2,7 @@
   <q-header elevated class="bg-indigo-2 text-white">
     <q-toolbar>
       <q-toolbar-title>
-        <q-btn to="/"
+        <q-btn :to="{ name: 'HomeView', query: { page: 1 } }"
           ><q-avatar>
             <q-btn flat round dense icon="satellite_alt" />
           </q-avatar>
