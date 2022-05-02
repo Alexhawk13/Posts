@@ -27,6 +27,15 @@ const routes = [
         path: 'home',
         name: 'HomeView',
         component: () => import('../views/HomeView.vue'),
+        beforeRouteUpdate(to, from, next) {
+          console.log('Leaving Route');
+        },
+        children: [
+          {
+            path: '/:id?',
+            component: () => import('../components/PostsBlock.vue'),
+          },
+        ],
       },
     ],
   },
