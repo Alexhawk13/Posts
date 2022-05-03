@@ -29,7 +29,13 @@
           <div class="row no-wrap q-pa-md">
             <div class="settings__column column items-center">
               <q-avatar size="72px">
-                <q-img src="https://cdn.quasar.dev/img/boy-avatar.png" />
+                <q-img
+                  :src="
+                    getUserState && getUserState.avatar
+                      ? getUserState.avatar
+                      : 'https://cdn.quasar.dev/img/boy-avatar.png'
+                  "
+                />
               </q-avatar>
 
               <div class="text-subtitle1 q-mt-md q-mb-xs">
@@ -76,7 +82,13 @@
             <div class="row no-wrap q-pa-md">
               <div class="settings__column column items-center">
                 <q-avatar size="72px">
-                  <img src="https://cdn.quasar.dev/img/boy-avatar.png" />
+                  <q-img
+                    :src="
+                      getUserState && getUserState.avatar
+                        ? getUserState.avatar
+                        : 'https://cdn.quasar.dev/img/boy-avatar.png'
+                    "
+                  />
                 </q-avatar>
 
                 <div class="text-subtitle1 q-mt-md q-mb-xs" v-if="isAuth">

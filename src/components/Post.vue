@@ -27,13 +27,14 @@
       </q-card-section>
       <q-card-section class="footer">
         <q-btn
+          dense
           flat
           round
           color="black"
           icon="favorite_border"
           readonly
           :label="post.likes.length"
-          class="q-pr-md"
+          class="likes q-pr-md"
         />
         <div class="text-subtitle2 avatar-wrapper">
           <img
@@ -100,7 +101,7 @@ export default {
 
 .card
   text-align center
-  max-width 100%
+  width 100%
   &:hover
     cursor pointer
 .date-block
@@ -146,4 +147,7 @@ export default {
   font-size 24px
   letter-spacing 2px
   color #1C1D1F
+.likes:hover
+  background-color: #dac8ff;
+  border-radius: 50%;
 </style>
