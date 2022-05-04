@@ -13,7 +13,7 @@ export default createStore({
     getUserState(state) {
       return state.user;
     },
-    posts(state) {
+    getPosts(state) {
       return state.posts;
     },
   },
@@ -45,13 +45,16 @@ export default createStore({
     logOut({ commit }) {
       commit('CLEAR_USER_DATA');
     },
-    async getPosts({ commit }, payload) {
+    async fetchPosts({ commit }, payload) {
       const posts = await api.get(`/api/v1/posts`, payload);
       commit('SET_POSTS', posts.data);
     },
     async fetchAuthor(_, id) {
       const response = await api.get(`/api/v1/users/${id}`);
       return response.data;
+    },
+    async like(_, postId) {
+      await api.put(`api/v1/posts/like/${postId}`);
     },
   },
   modules: {},

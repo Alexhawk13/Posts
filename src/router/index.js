@@ -4,35 +4,45 @@ const routes = [
   {
     path: '/auth/',
     name: 'AuthLayout',
-    component: () => import('../layouts/emptyLayout.vue'),
+    component: () => import('@/layouts/emptyLayout.vue'),
     children: [
       {
         path: 'signup',
         name: 'SignUp',
-        component: () => import('../views/SignupView.vue'),
+        component: () => import('@/views/SignupView.vue'),
       },
       {
         path: 'login',
         name: 'LogIn',
-        component: () => import('../views/LoginView.vue'),
+        component: () => import('@/views/LoginView.vue'),
       },
     ],
   },
   {
     path: '/',
     name: 'MainLayout',
-    component: () => import('../layouts/mainLayout.vue'),
+    component: () => import('@/layouts/mainLayout.vue'),
     children: [
       {
         path: 'home',
         name: 'HomeView',
-        component: () => import('../views/HomeView.vue'),
+        component: () => import('@/views/HomeView.vue'),
         children: [
           {
-            path: '/:id?',
-            component: () => import('../components/PostsBlock.vue'),
+            path: '/:page?',
+            component: () => import('@/components/PostsBlock.vue'),
           },
         ],
+      },
+      {
+        path: 'post/:id',
+        name: 'PostDetailsView',
+        component: () => import('@/views/PostDetailsView.vue'),
+      },
+      {
+        path: 'author/:id',
+        name: 'AuthorView',
+        component: () => import('@/views/AuthorView.vue'),
       },
     ],
   },

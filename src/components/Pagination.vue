@@ -1,9 +1,9 @@
 <template>
   <q-pagination
-    :posts="posts"
+    :posts="getPosts"
     class="flex-center"
     v-model="currentPage"
-    :max="this.posts ? Math.ceil(this.posts.pagination.total / 5) : 0"
+    :max="this.getPosts ? Math.ceil(this.getPosts.pagination.total / 5) : 0"
     :max-pages="7"
     direction-links
   />
@@ -29,13 +29,13 @@ export default {
       this.addRouteParam();
     },
     '$route.query.page'() {
-      if (!this.$route.query.page || this.$route.query.page == 1) {
+      if (this.$route.query.page == 1) {
         this.currentPage = 1;
       }
     },
   },
   computed: {
-    ...mapGetters(['posts']),
+    ...mapGetters(['getPosts']),
   },
   methods: {
     async fetchPosts() {
@@ -46,7 +46,7 @@ export default {
         },
       };
 
-      await this.$store.dispatch('getPosts', payload);
+      await this.$store.dispatch('fetchPosts', payload);
     },
     addRouteParam() {
       this.$router.push({ query: { page: this.currentPage } });
