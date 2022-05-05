@@ -1,8 +1,8 @@
 <template>
-  <div v-for="post in this.posts ? this.posts.data : 0" :key="post.id">
+  <div v-for="post in getPosts.data" :key="post.id">
     <Post :post="post" />
   </div>
-  <Pagination :posts="posts" />
+  <Pagination />
 </template>
 
 <script>
@@ -14,9 +14,7 @@ export default {
   name: 'PostsBlock',
   components: { Post, Pagination },
   computed: {
-    ...mapGetters(['posts']),
+    ...mapGetters(['getPosts']),
   },
 };
 </script>
-
-<style></style>
