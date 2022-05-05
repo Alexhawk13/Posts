@@ -21,7 +21,6 @@ export default {
   },
   mounted() {
     this.addRouteParam();
-    this.fetchPosts();
   },
   watch: {
     currentPage() {

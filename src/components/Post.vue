@@ -16,26 +16,16 @@
       />
       <q-card-section>
         <p class="title">
-          {{ post.title }}
+          {{ post.title ? post.title : '' }}
         </p>
       </q-card-section>
 
       <q-card-section class="q-pt-none">
         <p class="description">
-          {{ post.description }}
+          {{ post.description ? post.description : '' }}
         </p>
       </q-card-section>
       <q-card-section class="footer">
-        <q-btn
-          dense
-          flat
-          round
-          :color="isLiked ? 'red' : 'black'"
-          :icon="isLiked ? 'favorite' : 'favorite_border'"
-          readonly
-          :label="post.likes.length"
-          class="likes q-pr-md"
-        />
         <div class="text-subtitle2 avatar-wrapper">
           <q-icon
             v-if="!author || !author.avatar"
@@ -109,4 +99,6 @@ export default {
   cursor pointer
 body.desktop .q-hoverable:hover > .q-focus-helper .likes:hover
   background-color transparent
+body.desktop .q-focus-helper
+  width 0 !important
 </style>

@@ -49,6 +49,10 @@ export default createStore({
       const posts = await api.get(`/api/v1/posts`, payload);
       commit('SET_POSTS', posts.data);
     },
+    async fetchDetailsPost(_, id) {
+      const detailsPost = await api.get(`api/v1/posts/${id}`);
+      return detailsPost;
+    },
     async fetchAuthor(_, id) {
       const response = await api.get(`/api/v1/users/${id}`);
       return response.data;

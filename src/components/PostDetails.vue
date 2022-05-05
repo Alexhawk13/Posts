@@ -31,18 +31,18 @@
         </p>
       </q-card-section>
       <q-card-section class="footer">
-        <q-btn
-          id="like"
-          @click="like"
-          dense
-          flat
-          round
-          :color="isLiked ? 'red' : 'black'"
-          :icon="isLiked ? 'favorite' : 'favorite_border'"
-          :label="likes.length"
-          :disable="isLiked"
-          class="likes q-pr-md"
-        />
+        <div class="likes-wrapper">
+          <q-icon
+            @click="like"
+            :name="isLiked ? 'favorite' : 'favorite_border'"
+            :color="isLiked ? 'red' : 'black'"
+            :disable="isLoading"
+            size="sm"
+            class="likes q-pr-sm"
+          />
+          <span>{{ likes.length }}</span>
+        </div>
+
         <div class="text-subtitle2 avatar-wrapper" @click="profileView()">
           <q-icon
             v-if="!author || !author.avatar"
@@ -76,6 +76,7 @@ export default {
       author: null,
       baseUrl: process.env.VUE_APP_API,
       likes: [],
+      isLoading: false,
     };
   },
   async mounted() {
@@ -95,8 +96,14 @@ export default {
     },
 
     async like() {
+      this.isLoading = true;
       await this.$store.dispatch('like', this.post._id);
-      this.likes.push(this.getUserState._id);
+      if (!this.isLiked) {
+        this.likes.push(this.getUserState._id);
+      } else {
+        this.likes.pop();
+      }
+      this.isLoading = false;
     },
 
     profileView() {
@@ -120,7 +127,8 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-
+.likes:hover
+  cursor pointer
 .avatar-wrapper:hover
   cursor pointer
 </style>

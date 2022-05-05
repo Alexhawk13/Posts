@@ -1,34 +1,34 @@
 <template>
   <div>
-    <PostDetails v-if="isEmpty()" :post="post" />
+    <PostDetails v-if="!isLoading" :post="post" />
   </div>
 </template>
 
 <script>
 import PostDetails from '@/components/PostDetails.vue';
-import api from '@/services/api.js';
 
 export default {
   name: 'PostDetailsView',
   components: { PostDetails },
   data() {
     return {
-      post: {
-        type: Object,
-        default: () => {},
-      },
+      isLoading: true,
+      post: {},
     };
   },
   async mounted() {
-    const response = await api.get(`api/v1/posts/${this.$route.params.id}`);
-    this.post = response.data;
-  },
-  methods: {
-    isEmpty() {
-      return !this.post.default;
-    },
+    try {
+      this.isLoading = true;
+
+      const response = await this.$store.dispatch(
+        'fetchDetailsPost',
+        this.$route.params.id
+      );
+
+      this.post = response.data;
+    } finally {
+      this.isLoading = false;
+    }
   },
 };
 </script>
-
-<style></style>
