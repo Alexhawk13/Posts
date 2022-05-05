@@ -97,8 +97,4 @@ export default {
 <style lang="stylus" scoped>
 .card:hover
   cursor pointer
-body.desktop .q-hoverable:hover > .q-focus-helper .likes:hover
-  background-color transparent
-body.desktop .q-focus-helper
-  width 0 !important
 </style>
