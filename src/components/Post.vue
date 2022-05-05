@@ -67,8 +67,6 @@ export default {
     }
   },
   methods: {
-    convertDate,
-
     detailsPage(postId) {
       this.$router.push({ name: 'PostDetailsView', params: { id: postId } });
     },
@@ -82,7 +80,7 @@ export default {
 
     date() {
       return this.post.dateCreated
-        ? this.convertDate(this.post.dateCreated).split(' ')
+        ? convertDate(this.post.dateCreated).split(' ')
         : '';
     },
 

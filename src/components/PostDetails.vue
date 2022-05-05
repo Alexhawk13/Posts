@@ -62,7 +62,7 @@
 <script>
 import convertDate from '@/helpers/convertDate.js';
 import { mapGetters } from 'vuex';
-import { showModal } from '@/helpers/notifications.js';
+import { Dialog } from 'quasar';
 
 export default {
   name: 'PostDetails',
@@ -90,15 +90,13 @@ export default {
     this.likes = this.post.likes;
   },
   methods: {
-    convertDate,
-
     authorAvatar() {
       if (this.author && this.author.avatar) return this.author.avatar;
     },
 
     async like() {
       if (!this.isAuth) {
-        showModal();
+        this.modal();
       } else {
         this.isLoading = true;
         await this.$store.dispatch('like', this.post._id);
@@ -114,12 +112,38 @@ export default {
     profileView() {
       this.$router.push({ name: 'AuthorView' });
     },
+    modal() {
+      Dialog.create({
+        dark: true,
+        message: 'Only authorized users are allowed to do that',
+        persistent: true,
+        class: 'text-h6 text-center',
+        ok: {
+          push: true,
+          color: 'primary',
+          label: 'Log In',
+          padding: '7px 40px',
+          class: 'q-mr-auto',
+        },
+        cancel: {
+          push: true,
+          color: 'negative',
+          label: 'Dismiss',
+          padding: '7px 40px',
+          class: 'q-ml-auto',
+        },
+      })
+        .onOk(() => {
+          this.$router.push({ name: 'LogIn' });
+        })
+        .onCancel(() => {});
+    },
   },
   computed: {
     ...mapGetters(['getUserState', 'isAuth']),
     date() {
       return this.post && this.post.dateCreated
-        ? this.convertDate(this.post.dateCreated).split(' ')
+        ? convertDate(this.post.dateCreated).split(' ')
         : '';
     },
     isLiked() {
