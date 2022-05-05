@@ -60,8 +60,9 @@
 </template>
 
 <script>
-import convertDate from '@/helpers/methods/convertDate.js';
+import convertDate from '@/helpers/convertDate.js';
 import { mapGetters } from 'vuex';
+import { showModal } from '@/helpers/notifications.js';
 
 export default {
   name: 'PostDetails',
@@ -96,14 +97,18 @@ export default {
     },
 
     async like() {
-      this.isLoading = true;
-      await this.$store.dispatch('like', this.post._id);
-      if (!this.isLiked) {
-        this.likes.push(this.getUserState._id);
+      if (!this.isAuth) {
+        showModal();
       } else {
-        this.likes.pop();
+        this.isLoading = true;
+        await this.$store.dispatch('like', this.post._id);
+        if (!this.isLiked) {
+          this.likes.push(this.getUserState._id);
+        } else {
+          this.likes.pop();
+        }
+        this.isLoading = false;
       }
-      this.isLoading = false;
     },
 
     profileView() {
@@ -111,7 +116,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['getUserState']),
+    ...mapGetters(['getUserState', 'isAuth']),
     date() {
       return this.post && this.post.dateCreated
         ? this.convertDate(this.post.dateCreated).split(' ')

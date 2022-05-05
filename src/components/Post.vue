@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import convertDate from '@/helpers/methods/convertDate.js';
+import convertDate from '@/helpers/convertDate.js';
 import { mapGetters } from 'vuex';
 
 export default {
@@ -70,9 +70,7 @@ export default {
     convertDate,
 
     detailsPage(postId) {
-      this.isAuth
-        ? this.$router.push({ name: 'PostDetailsView', params: { id: postId } })
-        : alert('you have to Sign up first');
+      this.$router.push({ name: 'PostDetailsView', params: { id: postId } });
     },
 
     authorAvatar() {
