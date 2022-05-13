@@ -1,6 +1,9 @@
 <template>
   <div class="q-pa-md row items-start q-gutter-md card-wrapper">
-    <q-card class="my-card card" @click="detailsPage(post._id)">
+    <q-card
+      class="my-card card cursor-pointer full-width"
+      @click="detailsPage(post._id)"
+    >
       <div class="date-block">
         <strong>{{ date[1] }}</strong>
         <br />
@@ -34,7 +37,11 @@
             size="25px"
           ></q-icon>
           <img v-else class="avatar" :src="`${baseUrl + authorAvatar()}`" />
-          <span>{{ author ? author.name : 'John Doe' }}</span>
+          <span class="q-pl-sm">{{ author ? author.name : 'John Doe' }}</span>
+        </div>
+        <div>
+          <q-icon class="q-pr-sm" name="forum" size="sm" />
+          <span>{{ comments ? comments.length : 0 }}</span>
         </div>
       </q-card-section>
     </q-card>
@@ -56,16 +63,27 @@ export default {
   data() {
     return {
       author: null,
+      comments: null,
       baseUrl: process.env.VUE_APP_API,
     };
   },
-  async mounted() {
-    let authorId = this.post.postedBy;
 
-    if (authorId) {
-      this.author = await this.$store.dispatch('fetchAuthor', authorId);
-    }
+  mounted() {
+    this.author = this.post.author;
+    this.comments = this.post.comments;
   },
+
+  watch: {
+    post: {
+      handler: function () {
+        this.author = this.post.author;
+        this.comments = this.post.comments;
+      },
+      deep: false,
+      immediate: true,
+    },
+  },
+
   methods: {
     detailsPage(postId) {
       this.$router.push({ name: 'PostDetailsView', params: { id: postId } });
@@ -90,7 +108,10 @@ export default {
   },
 };
 </script>
+
 <style lang="stylus" scoped>
-.card:hover
-  cursor pointer
+.q-card > img
+  width initial
+  margin 0 auto
+  max-width 100%
 </style>

@@ -11,10 +11,11 @@ export default {
   name: 'HomeView',
   components: { PostsBlock },
   async mounted() {
+    const currentPage = +this.$route.query.page || 1;
     let payload = {
       params: {
         limit: 5,
-        skip: 0,
+        skip: currentPage !== 1 ? (currentPage - 1) * 5 : 0,
       },
     };
     await this.$store.dispatch('fetchPosts', payload);

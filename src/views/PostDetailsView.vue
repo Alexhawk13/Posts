@@ -1,21 +1,31 @@
 <template>
-  <div>
-    <PostDetails v-if="!isLoading" :post="post" />
-  </div>
+  <PostDetails
+    @showAllComments="showAllComments = !showAllComments"
+    v-if="!isLoading"
+    :post="post"
+    :comments="getComments"
+  />
+
+  <CommentBlock :showAllComments="showAllComments" />
 </template>
 
 <script>
 import PostDetails from '@/components/PostDetails.vue';
+import CommentBlock from '@/components/CommentBlock.vue';
+import { mapGetters } from 'vuex';
 
 export default {
   name: 'PostDetailsView',
-  components: { PostDetails },
+  components: { PostDetails, CommentBlock },
+
   data() {
     return {
       isLoading: true,
       post: {},
+      showAllComments: false,
     };
   },
+
   async mounted() {
     try {
       this.isLoading = true;
@@ -30,5 +40,19 @@ export default {
       this.isLoading = false;
     }
   },
+
+  computed: {
+    ...mapGetters(['getComments']),
+  },
 };
 </script>
+
+<style lang="stylus" scoped>
+.showComments
+.leaveComment
+  padding: 16px;
+  background-color: white;
+  border-radius: 10px;
+  color: blue;
+  cursor: pointer;
+</style>
