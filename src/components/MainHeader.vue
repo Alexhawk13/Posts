@@ -9,7 +9,6 @@
           Swagger</q-btn
         >
       </q-toolbar-title>
-      <q-space></q-space>
       <div>
         <router-link class="gt-xs" v-if="!isAuth" :to="{ name: 'LogIn' }">
           <q-btn
@@ -27,7 +26,7 @@
           icon="account_circle"
         >
           <div class="row no-wrap q-pa-md">
-            <div class="settings__column column items-center">
+            <div class="settings__column q-mx-auto column items-center">
               <q-avatar size="72px">
                 <q-img
                   :src="
@@ -148,15 +147,8 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.settings__column
-  margin 0 auto
-.burger__item
-  font-size 16px
-.q-item
-  padding 0
 .q-btn
   &.burger
-    margin-right -20px
     padding 13px 20px
   &:before
     box-shadow none

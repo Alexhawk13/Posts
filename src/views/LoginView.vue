@@ -49,12 +49,14 @@ export default {
       password: '',
     };
   },
+
   validations() {
     return {
       email: { required, email },
       password: { required, minLength: minLength(5) },
     };
   },
+
   methods: {
     async getAuthToken() {
       if (this.v$.$invalid) {

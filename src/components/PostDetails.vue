@@ -1,5 +1,5 @@
 <template>
-  <div class="q-pa-md row items-start q-gutter-md card-wrapper">
+  <div class="q-py-lg q-gutter-md card-wrapper">
     <q-card class="my-card card">
       <div class="date-block">
         <strong>{{ date[1] }}</strong>
@@ -32,15 +32,27 @@
       </q-card-section>
       <q-card-section class="footer">
         <div class="likes-wrapper">
-          <q-icon
+          <q-btn
+            round
+            class="no-box-shadow"
             @click="like"
-            :name="isLiked ? 'favorite' : 'favorite_border'"
-            :color="isLiked ? 'red' : 'black'"
-            :disable="isLoading"
-            size="sm"
-            class="likes q-pr-sm"
-          />
+            :disabled="isLoading"
+          >
+            <q-icon
+              :name="isLiked ? 'favorite' : 'favorite_border'"
+              :color="isLiked ? 'red' : 'black'"
+              size="sm"
+              class="likes"
+            />
+          </q-btn>
           <span>{{ likes.length }}</span>
+
+          <span class="showComments q-pl-sm" @click="$emit('showAllComments')"
+            ><q-icon class="q-pl-lg q-mr-sm" size="sm" name="message" />{{
+              comments ? comments.length : 0
+            }}
+            Comments</span
+          >
         </div>
 
         <div class="text-subtitle2 avatar-wrapper" @click="profileView()">
@@ -49,10 +61,13 @@
             class="avatar"
             name="face"
             size="25px"
-          ></q-icon>
+          />
+
           <img v-else class="avatar" :src="`${baseUrl + authorAvatar()}`" />
 
-          <span>{{ !author || !author.name ? 'John Doe' : author.name }}</span>
+          <span class="q-pl-sm">{{
+            !author || !author.name ? 'John Doe' : author.name
+          }}</span>
         </div>
       </q-card-section>
     </q-card>
@@ -61,8 +76,8 @@
 
 <script>
 import convertDate from '@/helpers/convertDate.js';
-import { mapGetters } from 'vuex';
 import { Dialog } from 'quasar';
+import { mapGetters } from 'vuex';
 
 export default {
   name: 'PostDetails',
@@ -71,13 +86,18 @@ export default {
       type: Object,
       default: () => {},
     },
+    comments: {
+      type: Object,
+      default: () => {},
+    },
   },
   data() {
     return {
       author: null,
       baseUrl: process.env.VUE_APP_API,
-      likes: [],
       isLoading: false,
+      showAllComments: false,
+      likes: [],
     };
   },
   async mounted() {
@@ -96,10 +116,34 @@ export default {
 
     async like() {
       if (!this.isAuth) {
-        this.modal();
+        Dialog.create({
+          dark: true,
+          message: 'Only authorized users are allowed to do that',
+          persistent: true,
+          class: 'text-h6 text-center',
+          ok: {
+            push: true,
+            color: 'primary',
+            label: 'Log In',
+            padding: '7px 40px',
+            class: 'q-mr-auto',
+          },
+          cancel: {
+            push: true,
+            color: 'negative',
+            label: 'Dismiss',
+            padding: '7px 40px',
+            class: 'q-ml-auto',
+          },
+        })
+          .onOk(() => {
+            this.$router.push({ name: 'LogIn' });
+          })
+          .onCancel(() => {});
       } else {
         this.isLoading = true;
-        await this.$store.dispatch('like', this.post._id);
+        await this.$store.dispatch('postLike', this.post._id);
+
         if (!this.isLiked) {
           this.likes.push(this.getUserState._id);
         } else {
@@ -111,32 +155,6 @@ export default {
 
     profileView() {
       this.$router.push({ name: 'AuthorView' });
-    },
-    modal() {
-      Dialog.create({
-        dark: true,
-        message: 'Only authorized users are allowed to do that',
-        persistent: true,
-        class: 'text-h6 text-center',
-        ok: {
-          push: true,
-          color: 'primary',
-          label: 'Log In',
-          padding: '7px 40px',
-          class: 'q-mr-auto',
-        },
-        cancel: {
-          push: true,
-          color: 'negative',
-          label: 'Dismiss',
-          padding: '7px 40px',
-          class: 'q-ml-auto',
-        },
-      })
-        .onOk(() => {
-          this.$router.push({ name: 'LogIn' });
-        })
-        .onCancel(() => {});
     },
   },
   computed: {
@@ -157,7 +175,13 @@ export default {
 
 <style lang="stylus" scoped>
 .likes:hover
-  cursor pointer
 .avatar-wrapper:hover
+.showComments:hover
   cursor pointer
+.showComments:hover
+  text-decoration underline
+.q-card > img
+  width initial
+  margin 0 auto
+  max-width 100%
 </style>

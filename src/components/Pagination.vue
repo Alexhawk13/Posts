@@ -1,10 +1,11 @@
 <template>
   <q-pagination
-    :posts="getPosts"
     class="flex-center"
     v-model="currentPage"
-    :max="this.getPosts ? Math.ceil(this.getPosts.pagination.total / 5) : 0"
-    :max-pages="7"
+    :max="
+      this.getPosts.data ? Math.ceil(this.getPosts.pagination.total / 5) : 0
+    "
+    :max-pages="5"
     direction-links
   />
 </template>
@@ -46,6 +47,7 @@ export default {
       };
 
       await this.$store.dispatch('fetchPosts', payload);
+      // console.log(this.getPosts, 'pagination');
     },
     addRouteParam() {
       this.$router.push({ query: { page: this.currentPage } });
