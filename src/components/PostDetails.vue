@@ -1,6 +1,19 @@
 <template>
-  <div class="q-py-lg q-gutter-md card-wrapper">
+  <div v-if="!isEditing" class="q-py-lg q-gutter-md card-wrapper">
     <q-card class="my-card card">
+      <div class="settings-wrapper">
+        <q-btn
+          v-if="isOwnPost"
+          @click="
+            isEditing = !isEditing;
+            $emit('editMode');
+          "
+          icon="settings"
+          size="24px"
+          class="cursor-pointer settings"
+        />
+      </div>
+
       <div class="date-block">
         <strong>{{ date[1] }}</strong>
         <br />
@@ -35,49 +48,97 @@
           <q-btn
             round
             class="no-box-shadow"
-            @click="like"
+            @click="likePost"
             :disabled="isLoading"
           >
             <q-icon
-              :name="isLiked ? 'favorite' : 'favorite_border'"
-              :color="isLiked ? 'red' : 'black'"
+              :name="isLiked(post) ? 'favorite' : 'favorite_border'"
+              :color="isLiked(post) ? 'red' : 'black'"
               size="sm"
-              class="likes"
+              class="likes cursor-pointer"
             />
           </q-btn>
           <span>{{ likes.length }}</span>
 
-          <span class="showComments q-pl-sm" @click="$emit('showAllComments')"
+          <span
+            class="showComments q-pl-sm cursor-pointer"
+            @click="$emit('showAllComments')"
             ><q-icon class="q-pl-lg q-mr-sm" size="sm" name="message" />{{
               comments ? comments.length : 0
             }}
-            Comments</span
-          >
+          </span>
         </div>
+        <div
+          @click="profileView"
+          class="avatarNameWrapper flex flex-center no-wrap cursor-pointer"
+        >
+          <q-avatar class="text-subtitle2 avatar-wrapper">
+            <q-icon
+              v-if="!author || !author.avatar"
+              class="avatar"
+              name="face"
+              size="40px"
+            />
 
-        <div class="text-subtitle2 avatar-wrapper" @click="profileView()">
-          <q-icon
-            v-if="!author || !author.avatar"
-            class="avatar"
-            name="face"
-            size="25px"
-          />
-
-          <img v-else class="avatar" :src="`${baseUrl + authorAvatar()}`" />
-
-          <span class="q-pl-sm">{{
-            !author || !author.name ? 'John Doe' : author.name
-          }}</span>
+            <img v-else class="avatar" :src="`${baseUrl + authorAvatar()}`" />
+          </q-avatar>
+          <p class="q-pl-sm q-mb-none name">
+            {{ !author || !author.name ? 'John Doe' : author.name }}
+          </p>
         </div>
       </q-card-section>
     </q-card>
   </div>
+  <div v-else class="flex column justify-center updateCard">
+    <img
+      v-if="this.post.image || this.imgFile"
+      class="block q-mx-auto"
+      id="pic"
+      :src="imgFile"
+    />
+    <q-file
+      class="uploader cursor-pointer"
+      accept=".jpg, .png, image/*"
+      filled
+      v-model="imgFile"
+      @update:model-value="handleUpload"
+    >
+      Upload image for this post
+    </q-file>
+    <q-card class="my-card card">
+      <q-card-section>
+        <q-input autogrow class="title" v-model="title" label="Title" />
+      </q-card-section>
+
+      <q-card-section class="q-pt-none">
+        <q-input
+          autogrow
+          class="description"
+          v-model="description"
+          label="Description"
+        />
+      </q-card-section>
+      <q-card-section class="q-pt-none">
+        <q-input
+          label="Post Text"
+          type="textarea"
+          rows="10"
+          cols="33"
+          v-model="fullText"
+          placeholder="Post Text"
+        />
+      </q-card-section>
+    </q-card>
+    <q-btn class="self-end q-px-lg q-my-md" color="primary" @click="updatePost"
+      >Update</q-btn
+    >
+  </div>
 </template>
 
 <script>
-import convertDate from '@/helpers/convertDate.js';
-import { Dialog } from 'quasar';
+import { monthAndDate } from '@/helpers/convertDate.js';
 import { mapGetters } from 'vuex';
+import { like, isLiked } from '@/helpers/like.js';
 
 export default {
   name: 'PostDetails',
@@ -94,94 +155,135 @@ export default {
   data() {
     return {
       author: null,
+      isEditing: false,
       baseUrl: process.env.VUE_APP_API,
       isLoading: false,
       showAllComments: false,
-      likes: [],
+      likes: this.post.likes,
+      title: this.post.title,
+      description: this.post.description,
+      fullText: this.post.fullText,
+      imgFile: null,
+      sendImgFile: null,
+      image: this.post.image,
     };
   },
   async mounted() {
+    if (this.post.image) {
+      this.imgFile = this.baseUrl + this.post.image;
+    }
+
     let authorId = this.post ? this.post.postedBy : '';
 
     if (authorId) {
       this.author = await this.$store.dispatch('fetchAuthor', authorId);
     }
-
-    this.likes = this.post.likes;
   },
   methods: {
+    isLiked,
     authorAvatar() {
       if (this.author && this.author.avatar) return this.author.avatar;
     },
 
-    async like() {
-      if (!this.isAuth) {
-        Dialog.create({
-          dark: true,
-          message: 'Only authorized users are allowed to do that',
-          persistent: true,
-          class: 'text-h6 text-center',
-          ok: {
-            push: true,
-            color: 'primary',
-            label: 'Log In',
-            padding: '7px 40px',
-            class: 'q-mr-auto',
-          },
-          cancel: {
-            push: true,
-            color: 'negative',
-            label: 'Dismiss',
-            padding: '7px 40px',
-            class: 'q-ml-auto',
-          },
-        })
-          .onOk(() => {
-            this.$router.push({ name: 'LogIn' });
-          })
-          .onCancel(() => {});
-      } else {
-        this.isLoading = true;
-        await this.$store.dispatch('postLike', this.post._id);
-
-        if (!this.isLiked) {
-          this.likes.push(this.getUserState._id);
-        } else {
-          this.likes.pop();
-        }
-        this.isLoading = false;
-      }
+    async likePost() {
+      this.isLoading = true;
+      this.likes = await like('postLike', this.post);
+      this.isLoading = false;
     },
 
     profileView() {
-      this.$router.push({ name: 'AuthorView' });
+      this.$router.push({
+        name: 'AuthorView',
+        params: { id: this.author._id },
+      });
+    },
+
+    handleUpload() {
+      this.sendImgFile = this.imgFile;
+      this.imgFile = URL.createObjectURL(this.imgFile);
+    },
+
+    async updatePost() {
+      if (this.sendImgFile) {
+        const formData = new FormData();
+
+        formData.append('image', this.sendImgFile);
+
+        const imagePayload = { id: this.post._id, img: formData };
+
+        await this.$store.dispatch('updatePostImage', imagePayload);
+      }
+
+      const postFieldsArray = ['title', 'description', 'fullText'];
+
+      const arrayOfChangedFields = postFieldsArray.filter(
+        (el) => this[el] !== this.post[el]
+      );
+      const changedData = {};
+
+      for (let key of arrayOfChangedFields) {
+        changedData[key] = this[key];
+      }
+
+      const payload = { obj: changedData, id: this.post._id };
+
+      if (Object.keys(changedData).length) {
+        this.$store.dispatch('updatePost', payload);
+      }
+
+      this.isEditing = false;
     },
   },
   computed: {
     ...mapGetters(['getUserState', 'isAuth']),
     date() {
       return this.post && this.post.dateCreated
-        ? convertDate(this.post.dateCreated).split(' ')
+        ? monthAndDate(this.post.dateCreated).split(' ')
         : '';
     },
-    isLiked() {
-      return this.post && this.post.likes && this.getUserState
-        ? this.post.likes.includes(this.getUserState._id)
-        : '';
+    isOwnPost() {
+      return this.getUserState
+        ? this.getUserState._id === this.post.postedBy
+        : false;
     },
   },
 };
 </script>
 
 <style lang="stylus" scoped>
-.likes:hover
-.avatar-wrapper:hover
-.showComments:hover
-  cursor pointer
+.avatar-wrapper
+  width: 40px;
+  height: 40px;
 .showComments:hover
   text-decoration underline
 .q-card > img
   width initial
   margin 0 auto
   max-width 100%
+#pic
+  max-width 100%
+.settings-wrapper
+  position absolute
+  top 5px
+  right 5px
+  background-color #ffffff8a
+  border-radius 50% !important
+.settings
+  transition-duration 1s
+  background none
+  &:hover
+    transform rotate(90deg)
+    background none
+.avatarNameWrapper
+  max-width 35vw
+  min-width 150px
+.name
+  white-space nowrap
+  overflow hidden
+  text-overflow ellipsis
+.updateCard
+  min-height 100vh
+.footer
+  @media screen and (max-width: 600px)
+    padding 0 0 10px 0
 </style>

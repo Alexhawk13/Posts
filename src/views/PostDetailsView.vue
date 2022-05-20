@@ -1,12 +1,16 @@
 <template>
   <PostDetails
+    @editMode="isEditing = !isEditing"
     @showAllComments="showAllComments = !showAllComments"
     v-if="!isLoading"
-    :post="post"
+    :post="getDetailsPost"
     :comments="getComments"
   />
 
-  <CommentBlock :showAllComments="showAllComments" />
+  <CommentBlock
+    v-if="!isEditing && !isLoading"
+    :showAllComments="showAllComments"
+  />
 </template>
 
 <script>
@@ -23,6 +27,7 @@ export default {
       isLoading: true,
       post: {},
       showAllComments: false,
+      isEditing: false,
     };
   },
 
@@ -34,15 +39,13 @@ export default {
         'fetchDetailsPost',
         this.$route.params.id
       );
-
-      this.post = response.data;
     } finally {
       this.isLoading = false;
     }
   },
 
   computed: {
-    ...mapGetters(['getComments']),
+    ...mapGetters(['getComments', 'getUserState', 'getDetailsPost']),
   },
 };
 </script>

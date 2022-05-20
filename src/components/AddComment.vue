@@ -16,7 +16,7 @@
       autogrow
       rounded
       outlined
-      class="message full-width"
+      class="comment-form__message full-width"
       v-model="text"
       placeholder="Write a comment"
       :error="v$.text.$error"
@@ -111,6 +111,7 @@ export default {
         await this.$store.dispatch('commentCreate', payload);
 
         this.text = '';
+        this.$emit('replied');
       }
     },
   },
@@ -126,6 +127,7 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.message
-  color #050505
+@import '@/styles/colors.styl'
+.comment-form__message
+  color $text-grey-2
 </style>

@@ -1,6 +1,6 @@
 <template>
   <q-header elevated class="bg-indigo-2 text-white">
-    <q-toolbar>
+    <q-toolbar class="q-pa-none">
       <q-toolbar-title>
         <q-btn :to="{ name: 'HomeView', query: { page: 1 } }"
           ><q-avatar>
@@ -20,7 +20,8 @@
         <q-btn-dropdown
           v-if="isAuth"
           auto-close
-          class="glossy gt-xs"
+          class="glossy gt-xs dropBtn"
+          id="name"
           color="blue-grey-6"
           :label="getUserState ? getUserState.name : ''"
           icon="account_circle"
@@ -28,13 +29,11 @@
           <div class="row no-wrap q-pa-md">
             <div class="settings__column q-mx-auto column items-center">
               <q-avatar size="72px">
-                <q-img
-                  :src="
-                    getUserState && getUserState.avatar
-                      ? getUserState.avatar
-                      : 'https://cdn.quasar.dev/img/boy-avatar.png'
-                  "
+                <img
+                  v-if="!getUserState || !getUserState.avatar"
+                  src="'https://cdn.quasar.dev/img/boy-avatar.png'"
                 />
+                <img v-else :src="`${baseUrl + getUserState.avatar}`" />
               </q-avatar>
 
               <div class="text-subtitle1 q-mt-md q-mb-xs">
@@ -46,6 +45,7 @@
                 color="blue-grey-6"
                 icon-right="manage_accounts"
                 label="Profile"
+                @click="profileView"
               />
               <q-btn
                 :to="{ name: 'HomeView' }"
@@ -81,16 +81,19 @@
             <div class="row no-wrap q-pa-md">
               <div class="settings__column column items-center">
                 <q-avatar size="72px">
-                  <q-img
+                  <img
                     :src="
                       getUserState && getUserState.avatar
-                        ? getUserState.avatar
+                        ? `${baseUrl + getUserState.avatar}`
                         : 'https://cdn.quasar.dev/img/boy-avatar.png'
                     "
                   />
                 </q-avatar>
 
-                <div class="text-subtitle1 q-mt-md q-mb-xs" v-if="isAuth">
+                <div
+                  class="text-subtitle1 text-center q-mt-md q-mb-xs"
+                  v-if="isAuth"
+                >
                   {{ getUserState ? getUserState.name : '' }}
                 </div>
                 <q-btn
@@ -100,6 +103,7 @@
                   icon-right="manage_accounts"
                   label="Profile"
                   v-close-popup
+                  @click="profileView"
                 />
                 <q-btn
                   v-if="isAuth"
@@ -134,6 +138,11 @@ import { mapGetters } from 'vuex';
 
 export default {
   name: 'MainHeader',
+  data() {
+    return {
+      baseUrl: process.env.VUE_APP_API,
+    };
+  },
   computed: {
     ...mapGetters(['isAuth', 'getUserState']),
   },
@@ -141,6 +150,12 @@ export default {
   methods: {
     logOut() {
       this.$store.dispatch('logOut');
+    },
+    profileView() {
+      this.$router.push({
+        name: 'AuthorView',
+        params: { id: this.getUserState._id },
+      });
     },
   },
 };
@@ -152,4 +167,14 @@ export default {
     padding 13px 20px
   &:before
     box-shadow none
+#name
+  max-width: 40vw
+  overflow hidden
+  &:deep
+    .block
+      max-width: 20vw;
+      overflow: hidden;
+      text-overflow: ellipsis;
+.dropBtn
+  border-radius 5px
 </style>
