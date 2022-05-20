@@ -44,6 +44,11 @@ const routes = [
         name: 'AuthorView',
         component: () => import('@/views/AuthorView.vue'),
       },
+      {
+        path: 'new-post',
+        name: 'NewPost',
+        component: () => import('@/views/NewPost.vue'),
+      },
     ],
   },
 ];

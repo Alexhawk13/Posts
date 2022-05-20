@@ -9,7 +9,7 @@
   </div>
 
   <div v-if="!isLoading">
-    <div v-if="getComments.length">
+    <div>
       <CommentCard
         v-show="showAllComments"
         v-for="comment in createCommentsTree"
@@ -17,7 +17,7 @@
         :comment="comment"
       />
     </div>
-    <div v-else class="text-center text-bold q-pb-lg">
+    <div v-if="!getComments.length" class="text-center text-bold q-pb-lg">
       There are no comments yet
     </div>
   </div>

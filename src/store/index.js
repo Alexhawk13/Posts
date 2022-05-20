@@ -12,6 +12,7 @@ export default createStore({
     user: null,
     posts: null,
     comments: null,
+    detailsPost: null,
   },
   getters: {
     isAuth(state) {
@@ -26,6 +27,10 @@ export default createStore({
       return state.posts;
     },
 
+    getDetailsPost(state) {
+      return state.detailsPost;
+    },
+
     getComments(state) {
       return state.comments;
     },
@@ -35,6 +40,10 @@ export default createStore({
       state.user = user;
     },
 
+    UPDATE_USER_DATA(state, updatedUser) {
+      state.user = updatedUser;
+    },
+
     CLEAR_USER_DATA(state) {
       state.user = null;
       localStorage.removeItem('token');
@@ -42,6 +51,14 @@ export default createStore({
 
     SET_POSTS(state, posts) {
       state.posts = posts;
+    },
+
+    SET_DETAILS_POST(state, detailsPost) {
+      state.detailsPost = detailsPost;
+    },
+
+    UPDATE_DETAILS_POST(state, detailsPost) {
+      state.detailsPost = detailsPost;
     },
 
     SET_COMMENTS(state, comments) {
@@ -103,8 +120,19 @@ export default createStore({
       commit('SET_POSTS', posts);
     },
 
-    async fetchDetailsPost(_, id) {
+    async fetchOwnPosts(_, payload) {
+      const response = await api.get(`api/v1/posts`, payload.limit);
+
+      const filteredPosts = response.data.data.filter((el) => {
+        return el.postedBy === payload.id;
+      });
+
+      return filteredPosts;
+    },
+
+    async fetchDetailsPost({ commit }, id) {
       const detailsPost = await api.get(`api/v1/posts/${id}`);
+      commit('SET_DETAILS_POST', detailsPost.data);
       return detailsPost;
     },
 
@@ -150,6 +178,66 @@ export default createStore({
     async commentRemove({ commit }, id) {
       commit('REMOVE_COMMENT', id);
       await api.delete(`api/v1/comments/${id}`);
+    },
+
+    async fetchUser(_, id) {
+      const response = await api.get(`api/v1/users/${id}`);
+      return response.data;
+    },
+
+    async updateAvatar({ commit }, payload) {
+      const img = payload.img;
+      const id = payload.id;
+      const response = await api.put(`api/v1/users/upload/${id}`, img, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      commit('UPDATE_USER_DATA', response.data);
+    },
+
+    async updateUser({ getters, commit }, payload) {
+      const userId = getters.getUserState._id;
+      const response = await api.patch(`api/v1/users/${userId}`, payload);
+
+      commit('UPDATE_USER_DATA', response.data);
+    },
+
+    async updatePostImage({ commit }, payload) {
+      const img = payload.img;
+      const id = payload.id;
+      const response = await api.put(`api/v1/posts/upload/${id}`, img, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      commit('UPDATE_DETAILS_POST', response.data);
+    },
+
+    async updatePost({ commit }, payload) {
+      const obj = payload.obj;
+      const id = payload.id;
+      const response = await api.patch(`api/v1/posts/${id}`, obj);
+
+      commit('UPDATE_DETAILS_POST', response.data);
+    },
+
+    async createPost(_, payload) {
+      const response = await api.post(`api/v1/posts`, payload);
+      return response.data._id;
+    },
+
+    deletePost(_, id) {
+      api.delete(`api/v1/posts/${id}`);
+    },
+
+    async getPostsTitles() {
+      const response = await api.get(`api/v1/posts`, { params: { limit: 0 } });
+      const titlesArray = [];
+      response.data.data.forEach((el) => {
+        titlesArray.push(el.title);
+      });
+      return titlesArray;
     },
   },
   modules: {},

@@ -1,5 +1,5 @@
 <template>
-  <div class="q-pa-md row items-start q-gutter-md card-wrapper">
+  <div class="q-pa-md row items-start card-wrapper">
     <q-card
       class="my-card card cursor-pointer full-width"
       @click="detailsPage(post._id)"
@@ -30,18 +30,22 @@
       </q-card-section>
       <q-card-section class="footer">
         <div class="text-subtitle2 avatar-wrapper">
-          <q-icon
-            v-if="!author || !author.avatar"
-            class="avatar"
-            name="face"
-            size="25px"
-          ></q-icon>
-          <img v-else class="avatar" :src="`${baseUrl + authorAvatar()}`" />
-          <span class="q-pl-sm">{{ author ? author.name : 'John Doe' }}</span>
+          <q-avatar>
+            <q-icon
+              v-if="!post.author || !post.author.avatar"
+              class="avatar"
+              name="face"
+              size="40px"
+            ></q-icon>
+            <img v-else class="avatar" :src="`${baseUrl + authorAvatar()}`" />
+          </q-avatar>
+          <span class="q-pl-sm">{{
+            post.author ? post.author.name : 'John Doe'
+          }}</span>
         </div>
         <div>
           <q-icon class="q-pr-sm" name="forum" size="sm" />
-          <span>{{ comments ? comments.length : 0 }}</span>
+          <span>{{ post.comments ? post.comments.length : 0 }}</span>
         </div>
       </q-card-section>
     </q-card>
@@ -49,7 +53,7 @@
 </template>
 
 <script>
-import convertDate from '@/helpers/convertDate.js';
+import { monthAndDate } from '@/helpers/convertDate.js';
 import { mapGetters } from 'vuex';
 
 export default {
@@ -62,26 +66,8 @@ export default {
   },
   data() {
     return {
-      author: null,
-      comments: null,
       baseUrl: process.env.VUE_APP_API,
     };
-  },
-
-  mounted() {
-    this.author = this.post.author;
-    this.comments = this.post.comments;
-  },
-
-  watch: {
-    post: {
-      handler: function () {
-        this.author = this.post.author;
-        this.comments = this.post.comments;
-      },
-      deep: false,
-      immediate: true,
-    },
   },
 
   methods: {
@@ -90,7 +76,8 @@ export default {
     },
 
     authorAvatar() {
-      if (this.author && this.author.avatar) return this.author.avatar;
+      if (this.post.author && this.post.author.avatar)
+        return this.post.author.avatar;
     },
   },
   computed: {
@@ -98,7 +85,7 @@ export default {
 
     date() {
       return this.post.dateCreated
-        ? convertDate(this.post.dateCreated).split(' ')
+        ? monthAndDate(this.post.dateCreated).split(' ')
         : '';
     },
 

@@ -3,7 +3,7 @@
     <div
       class="comment-wrapper row no-wrap items-start full-height q-py-sm q-px-none"
     >
-      <q-avatar class="cursor-pointer q-mr-sm">
+      <q-avatar @click="profileView" class="cursor-pointer q-mr-sm">
         <q-icon
           v-if="!author || !author.avatar"
           class="avatar comment__avatar"
@@ -12,7 +12,6 @@
         ></q-icon>
         <img
           v-else
-          @click="profileView()"
           class="avatar comment__avatar"
           :src="`${baseUrl + authorAvatar()}`"
         />
@@ -40,12 +39,12 @@
               <q-btn
                 round
                 class="no-box-shadow"
-                @click="like"
+                @click="likeComment"
                 :disabled="isLoading"
               >
                 <q-icon
-                  :name="isLiked ? 'favorite' : 'favorite_border'"
-                  :color="isLiked ? 'red' : 'black'"
+                  :name="isLiked(comment) ? 'favorite' : 'favorite_border'"
+                  :color="isLiked(comment) ? 'red' : 'black'"
                   size="sm"
                   class="likes"
                 />
@@ -56,12 +55,12 @@
           </footer>
         </div>
         <div v-else>
-          <div class="comment__text text-body1">
+          <div class="comment__text">
             <p class="comment__text__author text-bold q-px-sm q-mb-none">
               {{ author ? author.name : 'John Doe' }}
             </p>
             <q-input
-              @keydown.enter.prevent="editComment()"
+              @keydown.enter.prevent="editComment"
               v-model="message"
               autogrow
               type="text"
@@ -70,8 +69,8 @@
             </q-input>
           </div>
           <footer class="text-bold cursor-pointer">
-            <span class="q-pr-lg" @click="editComment()">save changes</span>
-            <span @click="cancelEdit()">cancel</span>
+            <span class="q-pr-lg" @click="editComment">save changes</span>
+            <span @click="cancelEdit">cancel</span>
           </footer>
         </div>
         <div
@@ -90,23 +89,27 @@
         </div>
       </div>
     </div>
-    <div v-if="hasChildren" v-show="showReply">
-      <CommentBlock
-        v-for="child in comment.children"
-        :key="child._id"
-        :comment="child"
-        class="q-pl-xl"
-      />
+    <div v-show="showReply">
+      <div v-if="hasChildren">
+        <CommentCard
+          v-for="child in comment.children"
+          :key="child._id"
+          :comment="child"
+          class="q-pl-xl"
+        />
+      </div>
     </div>
-    <AddComment v-show="reply" :comment="comment" />
+
+    <AddComment @replied="reply = false" v-show="reply" :comment="comment" />
   </q-card-section>
 </template>
 
 <script>
 import { Dialog } from 'quasar';
 import { mapGetters } from 'vuex';
-import convertDate from '@/helpers/convertDate.js';
+import { monthAndDate } from '@/helpers/convertDate.js';
 import AddComment from './AddComment.vue';
+import { like, isLiked } from '@/helpers/like.js';
 
 export default {
   name: 'CommentsCard',
@@ -122,12 +125,12 @@ export default {
     return {
       author: null,
       baseUrl: process.env.VUE_APP_API,
-      likes: [],
+      likes: this.comment.likes,
+      message: this.comment.text,
       isLoading: false,
       isChildShown: false,
       reply: false,
       isEditable: false,
-      message: this.comment.text,
     };
   },
 
@@ -137,57 +140,26 @@ export default {
         'fetchAuthor',
         this.comment.commentedBy
       );
-      this.likes = this.comment.likes;
     }
   },
 
   methods: {
+    isLiked,
     authorAvatar() {
       if (this.author && this.author.avatar) return this.author.avatar;
     },
 
     profileView() {
-      this.$router.push({ name: 'AuthorView' });
+      this.$router.push({
+        name: 'AuthorView',
+        params: { id: this.author._id },
+      });
     },
 
-    async like() {
-      if (!this.isAuth) {
-        Dialog.create({
-          dark: true,
-          message: 'Only authorized users are allowed to do that',
-          persistent: true,
-          class: 'text-h6 text-center',
-          ok: {
-            push: true,
-            color: 'primary',
-            label: 'Log In',
-            padding: '7px 40px',
-            class: 'q-mr-auto',
-          },
-          cancel: {
-            push: true,
-            color: 'negative',
-            label: 'Dismiss',
-            padding: '7px 40px',
-            class: 'q-ml-auto',
-          },
-        })
-          .onOk(() => {
-            this.$router.push({ name: 'LogIn' });
-          })
-          .onCancel(() => {});
-      } else {
-        this.isLoading = true;
-
-        await this.$store.dispatch('commentLike', this.comment._id);
-
-        if (!this.isLiked) {
-          this.likes.push(this.getUserState._id);
-        } else {
-          this.likes.pop();
-        }
-        this.isLoading = false;
-      }
+    async likeComment() {
+      this.isLoading = true;
+      this.likes = await like('commentLike', this.comment);
+      this.isLoading = false;
     },
 
     editComment() {
@@ -238,18 +210,12 @@ export default {
   computed: {
     ...mapGetters(['getUserState', 'isAuth', 'getComments']),
 
-    isLiked() {
-      return this.comment && this.likes && this.getUserState
-        ? this.likes.includes(this.getUserState._id)
-        : '';
-    },
-
     showReply() {
       return this.isChildShown;
     },
 
     date() {
-      return convertDate(this.comment.dateCreated);
+      return monthAndDate(this.comment.dateCreated);
     },
 
     isMyComment() {
@@ -266,12 +232,22 @@ export default {
 </script>
 
 <style lang="stylus">
-.comment
-  &__text
-    border-radius 10px
-    background-color #fffdfdde
+@import '@/styles/colors.styl'
+@import '@/styles/variables.styl'
+.comment__text
+  border-radius 10px
+  background-color $grey-1
+  font-size $font-size-medium
+  word-break break-all
+  &__author
+    overflow hidden
+    text-overflow ellipsis
+    display -webkit-box
+    -webkit-line-clamp 2
+    line-clamp 2
+    -webkit-box-orient vertical
 .replies
-  color #000000b3
+  color $text-grey-2
 .q-btn:before
   box-shadow none
 </style>

@@ -5,8 +5,10 @@
 
 body
   background-color $background-color
+
 body.desktop.no-touch.body--light
   font-family 'PT Sans', sans-serif
+
 .container
   width 100%
   margin-right auto
@@ -14,6 +16,7 @@ body.desktop.no-touch.body--light
 
   @media (min-width 576px)
     max-width 100%
+    padding: 0px 25px
 
   @media (min-width 1024px)
     max-width 960px
@@ -24,17 +27,34 @@ body.desktop.no-touch.body--light
   @media (min-width 1408px)
     max-width 1344px
 
+.uploader .q-field__native.row.items-center.cursor-pointer
+  display none
 
+.uploader .q-field__control-container.col.relative-position.row.no-wrap.q-anchor--skip
+  display block
+  font-size 24px
+  margin-top 10px
+  text-align center 
+
+body.desktop .q-hoverable:hover > .q-focus-helper
+  background none !important
+  opacity 0 !important
+
+.q-btn:before
+  box-shadow none !important
 
 .card
   text-align center
+
 .q-pa-md.row.items-start.q-gutter-md.card-wrapper
   @media screen and (min-width 600px) 
     width 80%
-    margin 0 auto   
+    margin 0 auto
+
 .heading
   margin-bottom 20px
   text-align center
+
 .date-block
   position absolute
   top -20px
@@ -47,18 +67,22 @@ body.desktop.no-touch.body--light
   @media screen and (max-width 600px)
     padding 15px 20px
     font-size 16px
+
 .avatar
   width 40px
   border-radius 50%
+
 .avatar-wrapper
   display flex
   align-items center
+
 .footer
   display flex
   align-items center
   border-top 2px dashed #0000003b
   justify-content space-between
   padding-top 5px
+
 .description
   display -webkit-box !important
   -webkit-line-clamp 2
@@ -70,12 +94,14 @@ body.desktop.no-touch.body--light
   font-size 18px
   -webkit-line-clamp 4
   color #444b4d
+
 .title
   @extends .description
   -webkit-line-clamp 2
   font-size 24px
   letter-spacing 2px
   color #1C1D1F
+
 .form-wrapper
   .form
     width "max(30vw, 290px)" % null
