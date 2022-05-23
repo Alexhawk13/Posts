@@ -22,7 +22,7 @@
         :props="props"
       >
         <q-btn
-          v-if="getUserState && props.row.postedBy === getUserState._id"
+          v-if="getUserData && props.row.postedBy === getUserData._id"
           @click="deletePost(props.row._id)"
           class="posts-table__card__delete-btn"
           >x</q-btn
@@ -57,7 +57,6 @@
 </template>
 
 <script>
-import { ref } from 'vue';
 import { mapGetters } from 'vuex';
 
 const columns = [
@@ -89,19 +88,19 @@ export default {
       baseUrl: process.env.VUE_APP_API,
     };
   },
-  async mounted() {
-    try {
-      this.isLoading = true;
-      const authorId = this.$route.params.id;
-      const payload = { id: authorId, limit: { params: { limit: 0 } } };
 
-      const myPosts = await this.$store.dispatch('fetchOwnPosts', payload);
-
-      this.myPosts = myPosts;
-    } finally {
-      this.isLoading = false;
-    }
+  mounted() {
+    this.fetchOwnPosts();
   },
+
+  watch: {
+    $route: {
+      handler() {
+        this.fetchOwnPosts();
+      },
+    },
+  },
+
   methods: {
     postDetails(id) {
       this.$router.push({ name: 'PostDetailsView', params: { id } });
@@ -112,9 +111,25 @@ export default {
 
       this.myPosts = this.myPosts.filter((post) => post._id !== id);
     },
+
+    async fetchOwnPosts() {
+      if (this.$route.name === 'AuthorView') {
+        try {
+          this.isLoading = true;
+          const authorId = this.$route.params.id;
+          const payload = { id: authorId, limit: { params: { limit: 0 } } };
+
+          const myPosts = await this.$store.dispatch('fetchOwnPosts', payload);
+
+          this.myPosts = myPosts;
+        } finally {
+          this.isLoading = false;
+        }
+      }
+    },
   },
   computed: {
-    ...mapGetters(['getPosts', 'getUserState']),
+    ...mapGetters(['getPosts', 'getUserData']),
 
     getMyPosts() {
       return this.myPosts;

@@ -35,17 +35,16 @@ export default {
     try {
       this.isLoading = true;
 
-      const response = await this.$store.dispatch(
-        'fetchDetailsPost',
-        this.$route.params.id
-      );
-    } finally {
+      await this.$store.dispatch('fetchDetailsPost', this.$route.params.id);
+
       this.isLoading = false;
+    } catch (error) {
+      this.$router.push({ name: 'NotFound' });
     }
   },
 
   computed: {
-    ...mapGetters(['getComments', 'getUserState', 'getDetailsPost']),
+    ...mapGetters(['getComments', 'getDetailsPost']),
   },
 };
 </script>

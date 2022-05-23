@@ -33,7 +33,7 @@ async function like(action, payload) {
     await $store.dispatch(action, payload._id);
 
     if (!isLiked(payload)) {
-      likes.push($store.getters.getUserState._id);
+      likes.push($store.getters.getUserData._id);
     } else {
       likes.pop();
     }
@@ -42,8 +42,8 @@ async function like(action, payload) {
 }
 
 function isLiked(payload) {
-  return $store.getters.getUserState
-    ? payload.likes.includes($store.getters.getUserState._id)
+  return $store.getters.getUserData
+    ? payload.likes.includes($store.getters.getUserData._id)
     : false;
 }
 

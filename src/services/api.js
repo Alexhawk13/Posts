@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { Loading } from 'quasar';
+import store from '../store';
 
 const baseURL = process.env.VUE_APP_API;
 
@@ -27,9 +28,18 @@ api.interceptors.request.use(
     return Promise.reject(error);
   }
 );
-api.interceptors.response.use((config) => {
-  Loading.hide();
-  return config;
-});
+api.interceptors.response.use(
+  (config) => {
+    Loading.hide();
+    return config;
+  },
+  function (error) {
+    Loading.hide();
+    if (error.response && error.response.status === 403) {
+      store.dispatch('logOut');
+    }
+    return Promise.reject(error.response.data.error);
+  }
+);
 
 export default api;

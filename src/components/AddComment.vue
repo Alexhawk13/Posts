@@ -2,11 +2,11 @@
   <q-form class="comment-form q-pb-lg row no-wrap">
     <q-avatar>
       <q-icon
-        v-if="!getUserState || !getUserState.avatar"
+        v-if="!getUserData || !getUserData.avatar"
         size="lg"
         name="face"
       />
-      <img v-else :src="`${baseUrl + getUserState.avatar}`" />
+      <img v-else :src="`${baseUrl + getUserData.avatar}`" />
     </q-avatar>
 
     <q-input
@@ -117,7 +117,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['getUserState', 'isAuth']),
+    ...mapGetters(['getUserData', 'isAuth']),
 
     isReplyToComment() {
       return this.comment;

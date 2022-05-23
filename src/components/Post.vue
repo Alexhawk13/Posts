@@ -1,7 +1,7 @@
 <template>
   <div class="q-pa-md row items-start card-wrapper">
     <q-card
-      class="my-card card cursor-pointer full-width"
+      class="card cursor-pointer full-width text-center"
       @click="detailsPage(post._id)"
     >
       <div class="date-block">
@@ -18,19 +18,25 @@
         "
       />
       <q-card-section>
-        <p class="title">
+        <p class="card__title">
           {{ post.title ? post.title : '' }}
         </p>
       </q-card-section>
 
       <q-card-section class="q-pt-none">
-        <p class="description">
+        <p class="card__description">
           {{ post.description ? post.description : '' }}
         </p>
       </q-card-section>
-      <q-card-section class="footer">
-        <div class="text-subtitle2 avatar-wrapper">
-          <q-avatar>
+      <q-card-section class="card__footer">
+        <div>
+          <q-icon class="q-pr-sm" name="forum" size="sm" />
+          <span>{{ post.comments ? post.comments.length : 0 }}</span>
+        </div>
+        <div
+          class="text-subtitle2 flex items-center flex-end no-wrap card__footer__author"
+        >
+          <q-avatar class="card__footer__author__avatar">
             <q-icon
               v-if="!post.author || !post.author.avatar"
               class="avatar"
@@ -39,13 +45,9 @@
             ></q-icon>
             <img v-else class="avatar" :src="`${baseUrl + authorAvatar()}`" />
           </q-avatar>
-          <span class="q-pl-sm">{{
+          <span class="q-pl-sm card__footer__author__name">{{
             post.author ? post.author.name : 'John Doe'
           }}</span>
-        </div>
-        <div>
-          <q-icon class="q-pr-sm" name="forum" size="sm" />
-          <span>{{ post.comments ? post.comments.length : 0 }}</span>
         </div>
       </q-card-section>
     </q-card>
@@ -81,7 +83,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['getUserState', 'isAuth']),
+    ...mapGetters(['getUserData', 'isAuth']),
 
     date() {
       return this.post.dateCreated
@@ -90,15 +92,8 @@ export default {
     },
 
     isLiked() {
-      return this.isAuth ? this.post.likes.includes(this.getUserState._id) : '';
+      return this.isAuth ? this.post.likes.includes(this.getUserData._id) : '';
     },
   },
 };
 </script>
-
-<style lang="stylus" scoped>
-.q-card > img
-  width initial
-  margin 0 auto
-  max-width 100%
-</style>

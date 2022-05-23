@@ -37,7 +37,7 @@
 
 <script>
 import useVuelidate from '@vuelidate/core';
-import { required, email, minLength } from '@vuelidate/validators';
+import { required, email, minLength, maxLength } from '@vuelidate/validators';
 import { showDangerMessage } from '../helpers/notifications.js';
 
 export default {
@@ -53,7 +53,7 @@ export default {
   validations() {
     return {
       email: { required, email },
-      password: { required, minLength: minLength(5) },
+      password: { required, minLength: minLength(5), maxLength: maxLength(10) },
     };
   },
 
@@ -71,8 +71,8 @@ export default {
         await this.$store.dispatch('getAuthToken', data);
 
         this.$router.push({ name: 'HomeView' });
-      } catch (e) {
-        showDangerMessage(e.response.data.error);
+      } catch (error) {
+        showDangerMessage(error);
       }
     },
   },

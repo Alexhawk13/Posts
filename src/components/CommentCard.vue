@@ -1,8 +1,6 @@
 <template>
   <q-card-section class="q-pa-none">
-    <div
-      class="comment-wrapper row no-wrap items-start full-height q-py-sm q-px-none"
-    >
+    <div class="comment row no-wrap items-start full-height q-py-sm q-px-none">
       <q-avatar @click="profileView" class="cursor-pointer q-mr-sm">
         <q-icon
           v-if="!author || !author.avatar"
@@ -17,7 +15,7 @@
         />
       </q-avatar>
 
-      <div class="comment no-wrap q-pa-xs full-width">
+      <div class="no-wrap q-pa-xs full-width">
         <div v-if="!isEditable">
           <div class="comment__text q-pa-sm text-body1">
             <p class="comment__text__author text-bold full-width">
@@ -105,7 +103,7 @@
 </template>
 
 <script>
-import { Dialog } from 'quasar';
+import { remove } from '@/helpers/deleteConfirmation';
 import { mapGetters } from 'vuex';
 import { monthAndDate } from '@/helpers/convertDate.js';
 import AddComment from './AddComment.vue';
@@ -145,6 +143,8 @@ export default {
 
   methods: {
     isLiked,
+    remove,
+
     authorAvatar() {
       if (this.author && this.author.avatar) return this.author.avatar;
     },
@@ -179,36 +179,12 @@ export default {
     },
 
     deleteComment() {
-      Dialog.create({
-        dark: true,
-        message: 'Are you sure to delete this comment?',
-        persistent: true,
-        class: 'text-h6 text-center',
-        ok: {
-          push: true,
-          color: 'primary',
-          label: 'Yes',
-          padding: '7px 40px',
-          class: 'q-mr-auto',
-        },
-        cancel: {
-          push: true,
-          color: 'negative',
-          label: 'Cancel',
-          padding: '7px 40px',
-          class: 'q-ml-auto',
-        },
-      })
-        .onOk(async () => {
-          const id = this.comment._id;
-          await this.$store.dispatch('commentRemove', id);
-        })
-        .onCancel(() => {});
+      remove('comment', this.comment._id, 'commentRemove');
     },
   },
 
   computed: {
-    ...mapGetters(['getUserState', 'isAuth', 'getComments']),
+    ...mapGetters(['getUserData', 'isAuth', 'getComments']),
 
     showReply() {
       return this.isChildShown;
@@ -219,8 +195,8 @@ export default {
     },
 
     isMyComment() {
-      if (this.comment && this.getUserState && this.getUserState._id) {
-        return this.getUserState._id === this.comment.commentedBy;
+      if (this.comment && this.getUserData && this.getUserData._id) {
+        return this.getUserData._id === this.comment.commentedBy;
       } else return false;
     },
 

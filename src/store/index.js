@@ -6,6 +6,7 @@ import {
   mergeData,
   mergeComments,
 } from '@/helpers/mergeData.js';
+import { showLoggedOutMessage } from '../helpers/notifications.js';
 
 export default createStore({
   state: {
@@ -19,7 +20,7 @@ export default createStore({
       return !!state.user;
     },
 
-    getUserState(state) {
+    getUserData(state) {
       return state.user;
     },
 
@@ -47,6 +48,10 @@ export default createStore({
     CLEAR_USER_DATA(state) {
       state.user = null;
       localStorage.removeItem('token');
+    },
+
+    DELETE_USER_DATA(state) {
+      state.user = null;
     },
 
     SET_POSTS(state, posts) {
@@ -101,6 +106,14 @@ export default createStore({
 
     logOut({ commit }) {
       commit('CLEAR_USER_DATA');
+      showLoggedOutMessage();
+    },
+
+    deleteUser({ commit, getters }) {
+      const id = getters.getUserData._id;
+      commit('DELETE_USER_DATA');
+      api.delete(`/api/v1/users/${id}`);
+      return true;
     },
 
     async fetchPosts({ commit }, payload) {
@@ -137,8 +150,12 @@ export default createStore({
     },
 
     async fetchAuthor(_, id) {
-      const response = await api.get(`/api/v1/users/${id}`);
-      return response.data;
+      try {
+        const response = await api.get(`/api/v1/users/${id}`);
+        return response.data;
+      } catch (error) {
+        throw Error(error);
+      }
     },
 
     async postLike(_, postId) {
@@ -180,11 +197,6 @@ export default createStore({
       await api.delete(`api/v1/comments/${id}`);
     },
 
-    async fetchUser(_, id) {
-      const response = await api.get(`api/v1/users/${id}`);
-      return response.data;
-    },
-
     async updateAvatar({ commit }, payload) {
       const img = payload.img;
       const id = payload.id;
@@ -197,7 +209,7 @@ export default createStore({
     },
 
     async updateUser({ getters, commit }, payload) {
-      const userId = getters.getUserState._id;
+      const userId = getters.getUserData._id;
       const response = await api.patch(`api/v1/users/${userId}`, payload);
 
       commit('UPDATE_USER_DATA', response.data);
@@ -229,15 +241,6 @@ export default createStore({
 
     deletePost(_, id) {
       api.delete(`api/v1/posts/${id}`);
-    },
-
-    async getPostsTitles() {
-      const response = await api.get(`api/v1/posts`, { params: { limit: 0 } });
-      const titlesArray = [];
-      response.data.data.forEach((el) => {
-        titlesArray.push(el.title);
-      });
-      return titlesArray;
     },
   },
   modules: {},

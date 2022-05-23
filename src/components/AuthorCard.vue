@@ -17,7 +17,7 @@
     <div class="author__main">
       <q-list class="author__main__list" bordered>
         <q-btn
-          v-if="getUserState && getUserState._id === author._id"
+          v-if="getUserData && getUserData._id === author._id"
           @click="isEditing = !isEditing"
           icon="settings"
           size="24px"
@@ -73,7 +73,7 @@
       </q-list>
     </div>
     <q-btn
-      v-if="getUserState && author._id === getUserState._id"
+      v-if="getUserData && author._id === getUserData._id"
       color="primary"
       @click="newPost"
       >Create new Post</q-btn
@@ -83,7 +83,7 @@
     <div class="column q-pb-md">
       <div>
         <q-avatar class="cursor-pointer" size="100px">
-          <img id="author__avatar" :src="imgFile" />
+          <img id="author__avatar" :src="avatar" />
           <q-file
             class="z-max author__uploader"
             accept=".jpg, .png, image/*"
@@ -103,43 +103,50 @@
           icon="settings"
           size="24px"
         />
+        <q-btn
+          class="cursor-pointer author__main__delete"
+          @click="deleteUser"
+          label="delete account"
+          color="negative"
+        />
         <q-item clickable>
           <q-item-section avatar>
             <q-icon color="primary" name="account_circle" />
             <q-tooltip>Name</q-tooltip>
           </q-item-section>
 
-          <q-item-section><q-input autogrow v-model="name" /></q-item-section>
+          <q-item-section
+            ><q-input label="name" autogrow v-model="name"
+          /></q-item-section>
         </q-item>
 
         <q-item clickable>
           <q-item-section avatar>
             <q-icon color="primary" name="badge" />
-            <q-tooltip>Profession</q-tooltip>
           </q-item-section>
 
           <q-item-section
-            ><q-input autogrow v-model="profession"
+            ><q-input label="profession" autogrow v-model="profession"
           /></q-item-section>
         </q-item>
 
         <q-item clickable>
           <q-item-section avatar>
             <q-icon color="primary" name="school" />
-            <q-tooltip>Skills</q-tooltip>
           </q-item-section>
 
-          <q-item-section><q-input autogrow v-model="skills" /></q-item-section>
+          <q-item-section
+            ><q-input label="skills" autogrow v-model="skills"
+          /></q-item-section>
         </q-item>
 
         <q-item clickable>
           <q-item-section avatar>
             <q-icon color="primary" name="density_medium" />
-            <q-tooltip>Details</q-tooltip>
           </q-item-section>
 
           <q-item-section
-            ><q-input autogrow v-model="details"
+            ><q-input label="details" autogrow v-model="details"
           /></q-item-section>
         </q-item>
 
@@ -150,7 +157,7 @@
           </q-item-section>
 
           <q-item-section
-            ><q-input autogrow v-model="extra_details"
+            ><q-input label="extra details" autogrow v-model="extra_details"
           /></q-item-section>
         </q-item>
       </q-list>
@@ -167,6 +174,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import { timePassed } from '../helpers/convertDate';
+import { remove } from '@/helpers/deleteConfirmation';
 
 export default {
   name: 'AuthorCard',
@@ -185,24 +193,29 @@ export default {
       extra_details: this.author.extra_details,
       baseUrl: process.env.VUE_APP_API,
       isEditing: false,
-      image: null,
       imgFile: null,
       sendImgFile: null,
+      avatar: null,
       oldAvatar: null,
     };
   },
 
   mounted() {
-    this.imgFile = this.baseUrl + this.author.avatar;
-    this.oldAvatar = this.imgFile;
+    if (this.author.avatar) {
+      this.avatar = this.baseUrl + this.author.avatar;
+    } else {
+      this.avatar = 'https://cdn.quasar.dev/img/boy-avatar.png';
+    }
+    this.oldAvatar = this.avatar;
   },
 
   methods: {
     timePassed,
+    remove,
 
     handleUpload() {
       this.sendImgFile = this.imgFile;
-      this.imgFile = URL.createObjectURL(this.imgFile);
+      this.avatar = URL.createObjectURL(this.imgFile);
     },
 
     async saveChanges() {
@@ -211,10 +224,12 @@ export default {
 
         formData.append('avatar', this.sendImgFile);
 
-        const imagePayload = { id: this.getUserState._id, img: formData };
+        const imagePayload = { id: this.getUserData._id, img: formData };
 
         await this.$store.dispatch('updateAvatar', imagePayload);
+
         this.sendImgFile = null;
+        this.oldAvatar = this.avatar;
       }
 
       const profileFieldsArray = [
@@ -224,17 +239,15 @@ export default {
         'details',
         'extra_details',
       ];
-      const arrayOfChangedFields = profileFieldsArray.filter(
+      const fieldsAreChanged = profileFieldsArray.some(
         (el) => this[el] !== this.author[el]
       );
-
-      const changedData = {};
-
-      for (let key of arrayOfChangedFields) {
-        changedData[key] = this[key];
+      const payload = {};
+      for (let key of profileFieldsArray) {
+        payload[key] = this[key];
       }
-      if (Object.keys(changedData).length) {
-        this.$store.dispatch('updateUser', changedData);
+      if (fieldsAreChanged) {
+        this.$store.dispatch('updateUser', payload);
       }
     },
 
@@ -244,16 +257,20 @@ export default {
       this.skills = this.author.skills;
       this.details = this.author.details;
       this.extra_details = this.author.extra_details;
-      this.imgFile = this.oldAvatar;
+      this.avatar = this.oldAvatar;
     },
 
     newPost() {
       this.$router.push({ name: 'NewPost' });
     },
+
+    deleteUser() {
+      remove('account', this.getUserData._id, 'deleteUser');
+    },
   },
 
   computed: {
-    ...mapGetters(['getUserState']),
+    ...mapGetters(['getUserData']),
   },
 };
 </script>
@@ -266,6 +283,10 @@ export default {
     &__list
       position relative
       border none
+    &__delete
+      position absolute
+      right 0
+      top -126px
     &__settings
       transition-duration 1s
       transform scale(.7)
