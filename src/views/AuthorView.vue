@@ -1,5 +1,5 @@
 <template>
-  <AuthorCard v-if="author" :author="isOwnProfile ? getUserState : author" />
+  <AuthorCard v-if="author" :author="isOwnProfile ? getUserData : author" />
   <AuthorPosts />
 </template>
 
@@ -16,27 +16,36 @@ export default {
     };
   },
 
-  async mounted() {
-    this.author = await this.$store.dispatch(
-      'fetchUser',
-      this.$route.params.id
-    );
-  },
-
   watch: {
-    async '$route.params.id'() {
-      this.author = await this.$store.dispatch(
-        'fetchUser',
-        this.$route.params.id
-      );
+    $route: {
+      handler() {
+        this.fetchAuthor();
+      },
+      immediate: true,
     },
   },
+
+  methods: {
+    async fetchAuthor() {
+      try {
+        if (this.$route.name === 'AuthorView') {
+          this.author = await this.$store.dispatch(
+            'fetchAuthor',
+            this.$route.params.id
+          );
+        }
+      } catch (error) {
+        this.$router.push({ name: 'NotFound' });
+      }
+    },
+  },
+
   computed: {
-    ...mapGetters(['getUserState']),
+    ...mapGetters(['getUserData']),
 
     isOwnProfile() {
-      return this.getUserState
-        ? this.author._id === this.getUserState._id
+      return this.getUserData
+        ? this.author._id === this.getUserData._id
         : false;
     },
   },

@@ -46,7 +46,7 @@
 
 <script>
 import useVuelidate from '@vuelidate/core';
-import { required, email, minLength } from '@vuelidate/validators';
+import { required, email, minLength, helpers } from '@vuelidate/validators';
 import {
   showDangerMessage,
   showSuccessMessage,
@@ -64,12 +64,25 @@ export default {
   },
   validations() {
     return {
-      email: { required, email },
+      email: {
+        required,
+        email,
+        validEmail: helpers.withMessage(
+          'Value is not a valid email address',
+          this.validateEmail
+        ),
+      },
       password: { required, minLength: minLength(5) },
       name: { required },
     };
   },
   methods: {
+    validateEmail() {
+      if (/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(this.email)) {
+        return true;
+      }
+    },
+
     async register() {
       if (this.v$.$invalid) {
         this.v$.$touch();
@@ -91,8 +104,8 @@ export default {
         this.$router.push({ name: 'LogIn' });
 
         showSuccessMessage('User successufully created');
-      } catch (e) {
-        showDangerMessage(e.response.data.error);
+      } catch (error) {
+        showDangerMessage(error);
       }
     },
   },

@@ -1,4 +1,6 @@
+import jwtDecode from 'jwt-decode';
 import { createRouter, createWebHistory } from 'vue-router';
+import store from '../store';
 
 const routes = [
   {
@@ -20,6 +22,7 @@ const routes = [
   },
   {
     path: '/',
+    redirect: { name: 'HomeView' },
     name: 'MainLayout',
     component: () => import('@/layouts/mainLayout.vue'),
     children: [
@@ -27,6 +30,7 @@ const routes = [
         path: 'home',
         name: 'HomeView',
         component: () => import('@/views/HomeView.vue'),
+        // props: { query: { page: 1 } },
         children: [
           {
             path: '/:page?',
@@ -47,15 +51,36 @@ const routes = [
       {
         path: 'new-post',
         name: 'NewPost',
-        component: () => import('@/views/NewPost.vue'),
+        component: () => import('@/views/NewPostView.vue'),
       },
     ],
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    component: () => import('@/views/NotFoundView.vue'),
   },
 ];
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
+});
+
+router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem('token');
+
+  if (token) {
+    const decodedToken = jwtDecode(token);
+
+    if (Date.now() >= decodedToken.exp * 1000) {
+      store.dispatch('logOut');
+    } else {
+      next();
+    }
+  } else {
+    next();
+  }
 });
 
 export default router;

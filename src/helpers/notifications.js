@@ -1,6 +1,6 @@
 import { Notify } from 'quasar';
 
-export function showSuccessMessage(text) {
+function showSuccessMessage(text) {
   Notify.create({
     type: 'positive',
     message: text,
@@ -8,7 +8,7 @@ export function showSuccessMessage(text) {
     timeout: '2000',
   });
 }
-export function showDangerMessage(text) {
+function showDangerMessage(text) {
   Notify.create({
     type: 'negative',
     message: text,
@@ -16,3 +16,14 @@ export function showDangerMessage(text) {
     timeout: '2000',
   });
 }
+
+function showLoggedOutMessage() {
+  Notify.create({
+    type: 'positive',
+    message: 'Logged Out',
+    position: 'top-right',
+    timeout: '2000',
+  });
+}
+
+export { showSuccessMessage, showDangerMessage, showLoggedOutMessage };

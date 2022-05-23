@@ -1,7 +1,7 @@
 <template>
   <div v-if="!isEditing" class="q-py-lg q-gutter-md card-wrapper">
-    <q-card class="my-card card">
-      <div class="settings-wrapper">
+    <q-card class="card text-center">
+      <div class="card__settings-wrapper">
         <q-btn
           v-if="isOwnPost"
           @click="
@@ -10,7 +10,7 @@
           "
           icon="settings"
           size="24px"
-          class="cursor-pointer settings"
+          class="cursor-pointer card__settings"
         />
       </div>
 
@@ -28,40 +28,35 @@
         "
       />
       <q-card-section>
-        <p class="title">
+        <p class="card__title">
           {{ post.title }}
         </p>
       </q-card-section>
 
       <q-card-section class="q-pt-none">
-        <p class="description">
+        <p class="card__description">
           {{ post.description }}
         </p>
       </q-card-section>
       <q-card-section class="q-pt-none">
-        <p class="description">
+        <p class="card__description">
           {{ post.fullText }}
         </p>
       </q-card-section>
-      <q-card-section class="footer">
-        <div class="likes-wrapper">
-          <q-btn
-            round
-            class="no-box-shadow"
-            @click="likePost"
-            :disabled="isLoading"
-          >
+      <q-card-section class="card__footer">
+        <div>
+          <q-btn round @click="likePost" :disabled="isLoading">
             <q-icon
               :name="isLiked(post) ? 'favorite' : 'favorite_border'"
               :color="isLiked(post) ? 'red' : 'black'"
               size="sm"
-              class="likes cursor-pointer"
+              class="cursor-pointer"
             />
           </q-btn>
           <span>{{ likes.length }}</span>
 
           <span
-            class="showComments q-pl-sm cursor-pointer"
+            class="card__footer__show-comments q-pl-sm cursor-pointer"
             @click="$emit('showAllComments')"
             ><q-icon class="q-pl-lg q-mr-sm" size="sm" name="message" />{{
               comments ? comments.length : 0
@@ -70,30 +65,24 @@
         </div>
         <div
           @click="profileView"
-          class="avatarNameWrapper flex flex-center no-wrap cursor-pointer"
+          class="card__footer__author flex flex-center no-wrap cursor-pointer"
         >
-          <q-avatar class="text-subtitle2 avatar-wrapper">
-            <q-icon
-              v-if="!author || !author.avatar"
-              class="avatar"
-              name="face"
-              size="40px"
-            />
+          <q-avatar class="card__footer__author__avatar">
+            <q-icon v-if="!author || !author.avatar" name="face" size="40px" />
 
-            <img v-else class="avatar" :src="`${baseUrl + authorAvatar()}`" />
+            <img v-else :src="`${baseUrl + authorAvatar()}`" />
           </q-avatar>
-          <p class="q-pl-sm q-mb-none name">
+          <p class="q-pl-sm q-mb-none card__footer__author__name">
             {{ !author || !author.name ? 'John Doe' : author.name }}
           </p>
         </div>
       </q-card-section>
     </q-card>
   </div>
-  <div v-else class="flex column justify-center updateCard">
+  <div v-else class="flex column justify-center card__update">
     <img
       v-if="this.post.image || this.imgFile"
-      class="block q-mx-auto"
-      id="pic"
+      class="block q-mx-auto card__update__image"
       :src="imgFile"
     />
     <q-file
@@ -105,7 +94,7 @@
     >
       Upload image for this post
     </q-file>
-    <q-card class="my-card card">
+    <q-card class="text-center">
       <q-card-section>
         <q-input autogrow class="title" v-model="title" label="Title" />
       </q-card-section>
@@ -192,10 +181,12 @@ export default {
     },
 
     profileView() {
-      this.$router.push({
-        name: 'AuthorView',
-        params: { id: this.author._id },
-      });
+      if (this.author) {
+        this.$router.push({
+          name: 'AuthorView',
+          params: { id: this.author._id },
+        });
+      }
     },
 
     handleUpload() {
@@ -235,15 +226,15 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['getUserState', 'isAuth']),
+    ...mapGetters(['getUserData', 'isAuth']),
     date() {
       return this.post && this.post.dateCreated
         ? monthAndDate(this.post.dateCreated).split(' ')
         : '';
     },
     isOwnPost() {
-      return this.getUserState
-        ? this.getUserState._id === this.post.postedBy
+      return this.getUserData
+        ? this.getUserData._id === this.post.postedBy
         : false;
     },
   },
@@ -251,39 +242,23 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.avatar-wrapper
-  width: 40px;
-  height: 40px;
-.showComments:hover
-  text-decoration underline
-.q-card > img
-  width initial
-  margin 0 auto
-  max-width 100%
-#pic
-  max-width 100%
-.settings-wrapper
-  position absolute
-  top 5px
-  right 5px
-  background-color #ffffff8a
-  border-radius 50% !important
-.settings
-  transition-duration 1s
-  background none
-  &:hover
-    transform rotate(90deg)
+.card
+  &__settings
+    transition-duration 1s
     background none
-.avatarNameWrapper
-  max-width 35vw
-  min-width 150px
-.name
-  white-space nowrap
-  overflow hidden
-  text-overflow ellipsis
-.updateCard
-  min-height 100vh
-.footer
-  @media screen and (max-width: 600px)
-    padding 0 0 10px 0
+    &:hover
+      transform rotate(90deg)
+      background none
+    &-wrapper
+      position absolute
+      top 5px
+      right 5px
+      background-color #ffffff8a
+      border-radius 50% !important
+    &__show-comments:hover
+      text-decoration underline
+  &__update
+    min-height 100vh
+    &__image
+      max-width 100%
 </style>

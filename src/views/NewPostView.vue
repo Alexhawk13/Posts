@@ -33,9 +33,7 @@
 <script>
 import useVuelidate from '@vuelidate/core';
 import { required, minLength, maxLength } from '@vuelidate/validators';
-import { helpers } from '@vuelidate/validators';
-
-const { withAsync } = helpers;
+import { showDangerMessage } from '../helpers/notifications.js';
 
 export default {
   name: 'NewPost',
@@ -56,10 +54,6 @@ export default {
         required,
         minLength: minLength(5),
         maxLength: maxLength(50),
-        isUnique: helpers.withMessage(
-          'Title should be unique',
-          this.isTitleUnique
-        ),
       },
       description: { required },
       fullText: {
@@ -77,27 +71,21 @@ export default {
     },
 
     async post() {
-      this.getPostsTitles();
       if (this.v$.$invalid) {
         this.v$.$touch();
         return;
       }
-      const payload = {
-        title: this.title,
-        description: this.description,
-        fullText: this.fullText,
-      };
-      const postId = await this.$store.dispatch('createPost', payload);
-
-      this.$router.push({ name: 'PostDetailsView', params: { id: postId } });
-    },
-
-    async getPostsTitles() {
-      this.existedPostTitles = await this.$store.dispatch('getPostsTitles');
-    },
-
-    isTitleUnique() {
-      return !this.existedPostTitles.includes(this.title);
+      try {
+        const payload = {
+          title: this.title,
+          description: this.description,
+          fullText: this.fullText,
+        };
+        const postId = await this.$store.dispatch('createPost', payload);
+        this.$router.push({ name: 'PostDetailsView', params: { id: postId } });
+      } catch (error) {
+        showDangerMessage(error);
+      }
     },
   },
 };

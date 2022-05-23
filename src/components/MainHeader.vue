@@ -2,7 +2,7 @@
   <q-header elevated class="bg-indigo-2 text-white">
     <q-toolbar class="q-pa-none">
       <q-toolbar-title>
-        <q-btn :to="{ name: 'HomeView', query: { page: 1 } }"
+        <q-btn @click="goHome"
           ><q-avatar>
             <q-btn flat round dense icon="satellite_alt" />
           </q-avatar>
@@ -23,21 +23,21 @@
           class="glossy gt-xs dropBtn"
           id="name"
           color="blue-grey-6"
-          :label="getUserState ? getUserState.name : ''"
+          :label="getUserData ? getUserData.name : ''"
           icon="account_circle"
         >
           <div class="row no-wrap q-pa-md">
             <div class="settings__column q-mx-auto column items-center">
               <q-avatar size="72px">
                 <img
-                  v-if="!getUserState || !getUserState.avatar"
-                  src="'https://cdn.quasar.dev/img/boy-avatar.png'"
+                  v-if="!getUserData || !getUserData.avatar"
+                  src="https://cdn.quasar.dev/img/boy-avatar.png"
                 />
-                <img v-else :src="`${baseUrl + getUserState.avatar}`" />
+                <img v-else :src="`${baseUrl + getUserData.avatar}`" />
               </q-avatar>
 
               <div class="text-subtitle1 q-mt-md q-mb-xs">
-                {{ getUserState ? getUserState.name : 'John Doe' }}
+                {{ getUserData ? getUserData.name : 'John Doe' }}
               </div>
               <q-btn
                 v-if="isAuth"
@@ -83,8 +83,8 @@
                 <q-avatar size="72px">
                   <img
                     :src="
-                      getUserState && getUserState.avatar
-                        ? `${baseUrl + getUserState.avatar}`
+                      getUserData && getUserData.avatar
+                        ? `${baseUrl + getUserData.avatar}`
                         : 'https://cdn.quasar.dev/img/boy-avatar.png'
                     "
                   />
@@ -94,7 +94,7 @@
                   class="text-subtitle1 text-center q-mt-md q-mb-xs"
                   v-if="isAuth"
                 >
-                  {{ getUserState ? getUserState.name : '' }}
+                  {{ getUserData ? getUserData.name : '' }}
                 </div>
                 <q-btn
                   v-if="isAuth"
@@ -144,18 +144,24 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['isAuth', 'getUserState']),
+    ...mapGetters(['isAuth', 'getUserData']),
   },
 
   methods: {
     logOut() {
       this.$store.dispatch('logOut');
+      this.$router.push({ name: 'HomeView' });
     },
+
     profileView() {
       this.$router.push({
         name: 'AuthorView',
-        params: { id: this.getUserState._id },
+        params: { id: this.getUserData._id },
       });
+    },
+
+    goHome() {
+      this.$router.push({ name: 'HomeView', query: { page: 1 } });
     },
   },
 };
@@ -170,11 +176,11 @@ export default {
 #name
   max-width: 40vw
   overflow hidden
-  &:deep
-    .block
-      max-width: 20vw;
-      overflow: hidden;
-      text-overflow: ellipsis;
+  &:deep(.block)
+    max-width: 20vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
 .dropBtn
   border-radius 5px
 </style>
