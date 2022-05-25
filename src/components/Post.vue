@@ -1,7 +1,7 @@
 <template>
   <div class="q-pa-md row items-start card-wrapper">
     <q-card
-      class="card cursor-pointer full-width text-center"
+      class="card cursor-pointer text-center"
       @click="detailsPage(post._id)"
     >
       <div class="date-block">
@@ -34,7 +34,7 @@
           <span>{{ post.comments ? post.comments.length : 0 }}</span>
         </div>
         <div
-          class="text-subtitle2 flex items-center flex-end no-wrap card__footer__author"
+          class="text-subtitle2 flex items-center justify-end no-wrap card__footer__author"
         >
           <q-avatar class="card__footer__author__avatar">
             <q-icon
@@ -46,7 +46,7 @@
             <img v-else class="avatar" :src="`${baseUrl + authorAvatar()}`" />
           </q-avatar>
           <span class="q-pl-sm card__footer__author__name">{{
-            post.author ? post.author.name : 'John Doe'
+            !post.author || !post.author.name ? 'John Doe' : post.author.name
           }}</span>
         </div>
       </q-card-section>
@@ -97,3 +97,23 @@ export default {
   },
 };
 </script>
+
+<style lang="stylus" scoped>
+.card
+  max-width 900px
+  min-width 100%
+  margin 0 auto
+  &__description
+    display -webkit-box !important
+    -webkit-line-clamp 2
+    -webkit-box-orient vertical
+    white-space normal
+    text-overflow ellipsis
+    overflow hidden
+    width 100%
+    -webkit-line-clamp 4
+  &__title
+    @extends .card__description
+    -webkit-line-clamp 2
+    letter-spacing 2px
+</style>

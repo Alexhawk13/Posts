@@ -169,15 +169,18 @@
       </div>
     </div>
   </div>
+  <Chart />
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
 import { timePassed } from '../helpers/convertDate';
-import { remove } from '@/helpers/deleteConfirmation';
+import { dialogDeleteWrapper } from '@/helpers/deleteConfirmation';
+import Chart from '@/components/Chart.vue';
 
 export default {
   name: 'AuthorCard',
+  components: { Chart },
   props: {
     author: {
       type: Object,
@@ -211,7 +214,7 @@ export default {
 
   methods: {
     timePassed,
-    remove,
+    dialogDeleteWrapper,
 
     handleUpload() {
       this.sendImgFile = this.imgFile;
@@ -265,7 +268,9 @@ export default {
     },
 
     deleteUser() {
-      remove('account', this.getUserData._id, 'deleteUser');
+      dialogDeleteWrapper('account', () => {
+        this.$store.dispatch('deleteUser', this.getUserData._id);
+      });
     },
   },
 

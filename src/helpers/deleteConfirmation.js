@@ -1,8 +1,6 @@
 import { Dialog } from 'quasar';
-import router from '../router';
-import store from '../store';
 
-function remove(name, id, action) {
+function dialogDeleteWrapper(name, func) {
   Dialog.create({
     dark: true,
     message: `Are you sure to delete this ${name} `,
@@ -24,12 +22,9 @@ function remove(name, id, action) {
     },
   })
     .onOk(() => {
-      store.dispatch(action, id);
-      if (name === 'account') {
-        router.push({ name: 'HomeView', query: { page: 1 } });
-      }
+      func();
     })
     .onCancel(() => {});
 }
 
-export { remove };
+export { dialogDeleteWrapper };

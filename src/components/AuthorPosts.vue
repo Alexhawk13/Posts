@@ -58,6 +58,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import { dialogDeleteWrapper } from '@/helpers/deleteConfirmation';
 
 const columns = [
   {
@@ -102,14 +103,17 @@ export default {
   },
 
   methods: {
+    dialogDeleteWrapper,
+
     postDetails(id) {
       this.$router.push({ name: 'PostDetailsView', params: { id } });
     },
 
     deletePost(id) {
-      this.$store.dispatch('deletePost', id);
-
-      this.myPosts = this.myPosts.filter((post) => post._id !== id);
+      dialogDeleteWrapper('post', () => {
+        this.$store.dispatch('deletePost', id);
+        this.myPosts = this.myPosts.filter((post) => post._id !== id);
+      });
     },
 
     async fetchOwnPosts() {
@@ -144,6 +148,7 @@ export default {
     width 300px
     text-align -webkit-center
     overflow hidden
+    background-color #f2fbfb
     &__row
       display block
       &__img

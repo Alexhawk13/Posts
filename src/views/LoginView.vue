@@ -1,6 +1,6 @@
 <template>
   <div class="form-wrapper">
-    <h3 class="heading">Log In</h3>
+    <h3 class="text-center q-mb-lg">Log In</h3>
     <q-form class="form" @submit.prevent="getAuthToken">
       <q-input
         class="form__input"

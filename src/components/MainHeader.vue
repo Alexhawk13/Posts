@@ -20,14 +20,14 @@
         <q-btn-dropdown
           v-if="isAuth"
           auto-close
-          class="glossy gt-xs dropBtn"
+          class="glossy gt-xs dropdown-btn"
           id="name"
           color="blue-grey-6"
           :label="getUserData ? getUserData.name : ''"
           icon="account_circle"
         >
           <div class="row no-wrap q-pa-md">
-            <div class="settings__column q-mx-auto column items-center">
+            <div class="q-mx-auto column items-center">
               <q-avatar size="72px">
                 <img
                   v-if="!getUserData || !getUserData.avatar"
@@ -176,11 +176,11 @@ export default {
 #name
   max-width: 40vw
   overflow hidden
-  &:deep(.block)
+  &:deep(span.block)
     max-width: 20vw;
     overflow: hidden;
     text-overflow: ellipsis;
 
-.dropBtn
+.dropdown-btn
   border-radius 5px
 </style>

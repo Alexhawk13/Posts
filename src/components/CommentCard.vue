@@ -1,6 +1,6 @@
 <template>
   <q-card-section class="q-pa-none">
-    <div class="comment row no-wrap items-start full-height q-py-sm q-px-none">
+    <div class="comment row no-wrap items-start full-height q-mb-md q-px-none">
       <q-avatar @click="profileView" class="cursor-pointer q-mr-sm">
         <q-icon
           v-if="!author || !author.avatar"
@@ -15,7 +15,7 @@
         />
       </q-avatar>
 
-      <div class="no-wrap q-pa-xs full-width">
+      <div class="no-wrap full-width">
         <div v-if="!isEditable">
           <div class="comment__text q-pa-sm text-body1">
             <p class="comment__text__author text-bold full-width">
@@ -59,10 +59,12 @@
             </p>
             <q-input
               @keydown.enter.prevent="editComment"
-              v-model="message"
+              v-model="textEdit"
               autogrow
               type="text"
               class="q-px-sm text-bold"
+              :error="v$.textEdit.$error"
+              :error-message="v$.textEdit.$errors[0]?.$message"
             >
             </q-input>
           </div>
@@ -103,11 +105,13 @@
 </template>
 
 <script>
-import { remove } from '@/helpers/deleteConfirmation';
+import AddComment from './AddComment.vue';
+import { dialogDeleteWrapper } from '@/helpers/deleteConfirmation';
 import { mapGetters } from 'vuex';
 import { monthAndDate } from '@/helpers/convertDate.js';
-import AddComment from './AddComment.vue';
 import { like, isLiked } from '@/helpers/like.js';
+import useVuelidate from '@vuelidate/core';
+import { required, minLength, maxLength } from '@vuelidate/validators';
 
 export default {
   name: 'CommentsCard',
@@ -121,14 +125,25 @@ export default {
 
   data() {
     return {
+      v$: useVuelidate(),
       author: null,
       baseUrl: process.env.VUE_APP_API,
       likes: this.comment.likes,
-      message: this.comment.text,
+      textEdit: this.comment.text,
       isLoading: false,
       isChildShown: false,
       reply: false,
       isEditable: false,
+    };
+  },
+
+  validations() {
+    return {
+      textEdit: {
+        required,
+        minLength: minLength(3),
+        maxLength: maxLength(80),
+      },
     };
   },
 
@@ -143,7 +158,7 @@ export default {
 
   methods: {
     isLiked,
-    remove,
+    dialogDeleteWrapper,
 
     authorAvatar() {
       if (this.author && this.author.avatar) return this.author.avatar;
@@ -163,7 +178,11 @@ export default {
     },
 
     editComment() {
-      const text = this.message;
+      if (this.v$.textEdit.$invalid) {
+        this.v$.$touch();
+        return;
+      }
+      const text = this.textEdit;
       const payload = { text, id: this.comment._id };
 
       if (this.comment.text !== text) {
@@ -179,7 +198,9 @@ export default {
     },
 
     deleteComment() {
-      remove('comment', this.comment._id, 'commentRemove');
+      dialogDeleteWrapper('comment', () => {
+        this.$store.dispatch('commentRemove', this.comment._id);
+      });
     },
   },
 
@@ -210,18 +231,22 @@ export default {
 <style lang="stylus">
 @import '@/styles/colors.styl'
 @import '@/styles/variables.styl'
-.comment__text
-  border-radius 10px
-  background-color $grey-1
-  font-size $font-size-medium
-  word-break break-all
-  &__author
-    overflow hidden
-    text-overflow ellipsis
-    display -webkit-box
-    -webkit-line-clamp 2
-    line-clamp 2
-    -webkit-box-orient vertical
+.comment
+  border 1px solid #fff
+  border-radius 16px
+  &__text
+    border-radius 10px
+    border-bottom-right-radius 0
+    background-color $grey-1
+    font-size $font-size-medium
+    word-break break-all
+    &__author
+      overflow hidden
+      text-overflow ellipsis
+      display -webkit-box
+      -webkit-line-clamp 2
+      line-clamp 2
+      -webkit-box-orient vertical
 .replies
   color $text-grey-2
 .q-btn:before

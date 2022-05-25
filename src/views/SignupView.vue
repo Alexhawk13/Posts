@@ -1,6 +1,6 @@
 <template>
   <div class="form-wrapper">
-    <h3 class="heading">Sign Up</h3>
+    <h3 class="text-center q-mb-lg">Sign Up</h3>
     <q-form class="form" @submit.prevent="register">
       <q-input
         class="form__input"
