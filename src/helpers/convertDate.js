@@ -1,8 +1,5 @@
 import { format, formatDistance } from 'date-fns';
 
-// formatDistance(subDays(new Date(), 3), new Date(), { addSuffix: true })
-//=> "3 days ago"
-
 function monthAndDate(date) {
   if (!date) return;
 
@@ -19,4 +16,24 @@ function timePassed(date) {
   return formatDistance(time, new Date(), { addSuffix: true });
 }
 
-export { monthAndDate, timePassed };
+function getFullDate(date) {
+  if (!date) return;
+
+  const time = new Date(date);
+
+  const year = format(time, 'yyyy');
+  const month = format(time, 'MMMM');
+  const weak = format(time, 'wo');
+  const day = format(time, 'dd MM');
+
+  const timeObj = {
+    year,
+    month,
+    weak,
+    day,
+  };
+
+  return timeObj;
+}
+
+export { monthAndDate, timePassed, getFullDate };

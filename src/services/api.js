@@ -35,10 +35,7 @@ api.interceptors.response.use(
   },
   function (error) {
     Loading.hide();
-    if (error.response && error.response.status === 403) {
-      store.dispatch('logOut');
-    }
-    return Promise.reject(error.response.data.error);
+    return Promise.reject(error);
   }
 );
 

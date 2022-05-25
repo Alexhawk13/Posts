@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!isEditing" class="q-py-lg q-gutter-md card-wrapper">
+  <div v-if="!isEditing" class="q-py-lg q-px-md card-wrapper">
     <q-card class="card text-center">
       <div class="card__settings-wrapper">
         <q-btn
@@ -58,14 +58,14 @@
           <span
             class="card__footer__show-comments q-pl-sm cursor-pointer"
             @click="$emit('showAllComments')"
-            ><q-icon class="q-pl-lg q-mr-sm" size="sm" name="message" />{{
+            ><q-icon class="q-pl-md q-mr-sm" size="sm" name="message" />{{
               comments ? comments.length : 0
             }}
           </span>
         </div>
         <div
           @click="profileView"
-          class="card__footer__author flex flex-center no-wrap cursor-pointer"
+          class="card__footer__author flex items-center justify-end no-wrap cursor-pointer"
         >
           <q-avatar class="card__footer__author__avatar">
             <q-icon v-if="!author || !author.avatar" name="face" size="40px" />
@@ -87,7 +87,7 @@
     />
     <q-file
       class="uploader cursor-pointer"
-      accept=".jpg, .png, image/*"
+      accept=".jpg, .png, webP, image/*"
       filled
       v-model="imgFile"
       @update:model-value="handleUpload"

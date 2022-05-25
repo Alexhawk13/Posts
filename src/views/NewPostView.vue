@@ -84,7 +84,7 @@ export default {
         const postId = await this.$store.dispatch('createPost', payload);
         this.$router.push({ name: 'PostDetailsView', params: { id: postId } });
       } catch (error) {
-        showDangerMessage(error);
+        showDangerMessage(error.response.data.error);
       }
     },
   },
