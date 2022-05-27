@@ -84,6 +84,7 @@ export default {
     },
 
     async register() {
+      console.log('registering');
       if (this.v$.$invalid) {
         this.v$.$touch();
         return;
