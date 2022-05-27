@@ -48,6 +48,7 @@ export default createStore({
     CLEAR_USER_DATA(state) {
       state.user = null;
       localStorage.removeItem('token');
+      console.log(state.user);
     },
 
     DELETE_USER_DATA(state) {

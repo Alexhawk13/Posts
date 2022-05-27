@@ -83,7 +83,7 @@
     <img
       v-if="this.post.image || this.imgFile"
       class="block q-mx-auto card__update__image"
-      :src="imgFile"
+      :src="image"
     />
     <q-file
       class="uploader cursor-pointer"
@@ -159,7 +159,7 @@ export default {
   },
   async mounted() {
     if (this.post.image) {
-      this.imgFile = this.baseUrl + this.post.image;
+      this.image = this.baseUrl + this.post.image;
     }
 
     let authorId = this.post ? this.post.postedBy : '';
@@ -191,7 +191,7 @@ export default {
 
     handleUpload() {
       this.sendImgFile = this.imgFile;
-      this.imgFile = URL.createObjectURL(this.imgFile);
+      this.image = URL.createObjectURL(this.imgFile);
     },
 
     async updatePost() {

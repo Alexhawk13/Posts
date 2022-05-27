@@ -30,7 +30,6 @@ const routes = [
         path: 'home',
         name: 'HomeView',
         component: () => import('@/views/HomeView.vue'),
-        // props: { query: { page: 1 } },
         children: [
           {
             path: '/:page?',
@@ -75,6 +74,7 @@ router.beforeEach((to, from, next) => {
 
     if (Date.now() >= decodedToken.exp * 1000) {
       store.dispatch('logOut');
+      router.push({ name: 'HomeView' });
     } else {
       next();
     }

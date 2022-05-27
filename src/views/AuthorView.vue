@@ -16,24 +16,17 @@ export default {
     };
   },
 
-  watch: {
-    $route: {
-      handler() {
-        this.fetchAuthor();
-      },
-      immediate: true,
-    },
+  mounted() {
+    this.fetchAuthor();
   },
 
   methods: {
     async fetchAuthor() {
       try {
-        if (this.$route.name === 'AuthorView') {
-          this.author = await this.$store.dispatch(
-            'fetchAuthor',
-            this.$route.params.id
-          );
-        }
+        this.author = await this.$store.dispatch(
+          'fetchAuthor',
+          this.$route.params.id
+        );
       } catch (error) {
         this.$router.push({ name: 'NotFound' });
       }

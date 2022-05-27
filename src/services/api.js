@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { Loading } from 'quasar';
-import store from '../store';
 
 const baseURL = process.env.VUE_APP_API;
 

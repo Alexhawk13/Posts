@@ -1,4 +1,4 @@
-import { format, formatDistance } from 'date-fns';
+import { format, formatDistance, getDaysInMonth } from 'date-fns';
 
 function monthAndDate(date) {
   if (!date) return;
@@ -23,17 +23,19 @@ function getFullDate(date) {
 
   const year = format(time, 'yyyy');
   const month = format(time, 'MMMM');
-  const weak = format(time, 'wo');
-  const day = format(time, 'dd MM');
+  const day = format(time, 'D', { useAdditionalDayOfYearTokens: true });
 
   const timeObj = {
     year,
     month,
-    weak,
     day,
   };
 
   return timeObj;
 }
 
-export { monthAndDate, timePassed, getFullDate };
+function getCurrentDayNumberInYear() {
+  return format(new Date(), 'D', { useAdditionalDayOfYearTokens: true });
+}
+
+export { monthAndDate, timePassed, getFullDate, getCurrentDayNumberInYear };
