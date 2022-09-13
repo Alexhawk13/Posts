@@ -34,7 +34,7 @@ api.interceptors.response.use(
   },
   function (error) {
     Loading.hide();
-    return Promise.reject(error);
+    return error;
   }
 );
 

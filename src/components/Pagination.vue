@@ -2,7 +2,7 @@
   <q-pagination
     class="flex-center"
     v-model="currentPage"
-    :max="this.getPosts.data ? Math.ceil(getTotalPages) : 0"
+    :max="this.getPosts.data ? getTotalPages : 0"
     :max-pages="5"
     direction-links
   />
@@ -49,7 +49,7 @@ export default {
     ...mapGetters(['getPosts']),
 
     getTotalPages() {
-      return this.getPosts.pagination.total / 5;
+      return Math.ceil(this.getPosts.pagination.total / 5);
     },
   },
   methods: {
