@@ -155,7 +155,7 @@ export default createStore({
         const response = await api.get(`/api/v1/users/${id}`);
         return response.data;
       } catch (error) {
-        throw Error(error);
+        console.log(error);
       }
     },
 
